@@ -55,7 +55,7 @@ This guide documents deploying a demo IBM Event Streams instance on a **kind** c
 Use the provided `kind-config.yaml`, which defines one control-plane node (with host port mappings) and two worker nodes:
 
 ```bash
-cd ~/ibm/event-automation
+cd ~/ibm/eventstreams
 kind create cluster -n confluent --config kind-config.yaml
 ```
 
