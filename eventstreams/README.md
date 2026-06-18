@@ -1,0 +1,709 @@
+# IBM Event Streams — Demo Deployment on Kubernetes (kind on EC2)
+
+This guide documents deploying a demo IBM Event Streams instance on a **kind** cluster running on an AWS EC2 instance. It follows the official installation guide:
+
+**Reference:** [Installing Event Streams on Kubernetes](https://ibm.github.io/event-automation/es/installing/installing-on-kubernetes/)
+
+---
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [1. Create the kind Cluster](#1-create-the-kind-cluster)
+- [2. Add the IBM Helm Repository](#2-add-the-ibm-helm-repository)
+- [3. Install Cluster-Scoped CRDs](#3-install-cluster-scoped-crds)
+- [4. Install the Event Streams Operator](#4-install-the-event-streams-operator)
+- [5. Create the IBM Entitlement Key Secret](#5-create-the-ibm-entitlement-key-secret)
+- [6. Install NGINX Ingress Controller](#6-install-nginx-ingress-controller)
+- [7. Configure and Deploy the Event Streams Instance](#7-configure-and-deploy-the-event-streams-instance)
+- [8. Verify the Deployment](#8-verify-the-deployment)
+- [9. Configure Local DNS (/etc/hosts)](#9-configure-local-dns-etchosts)
+- [10. Create the Admin User](#10-create-the-admin-user)
+- [11. Access the Admin UI](#11-access-the-admin-ui)
+- [12. Install the Event Streams CLI](#12-install-the-event-streams-cli)
+- [13. Manage Kafka Topics](#13-manage-kafka-topics)
+- [14. Run the Starter Application](#14-run-the-starter-application)
+- [Troubleshooting Notes](#troubleshooting-notes)
+
+---
+
+## Prerequisites
+
+| Requirement | Notes |
+|---|---|
+| **kind** | Kubernetes in Docker |
+| **kubectl** | Configured for the kind cluster |
+| **Helm 3** | Package manager for Kubernetes |
+| **IBM Entitlement Key** | Obtain from [IBM Container Library](https://myibm.ibm.com/products-services/containerlibrary) |
+| **EC2 instance** | With ports **80**, **443**, and **9094** open in the security group |
+| **Java 11+** | Required for the starter application demo |
+
+> **Note:** This deployment uses a **kind** cluster on EC2. The custom `kind-config.yaml` in this directory binds ports 80, 443, and 9094 from the EC2 host directly into the kind control-plane container.
+
+> **Warning:** If Apache2 is listening on port 80, stop it before creating the cluster:
+>
+> ```bash
+> sudo systemctl stop apache2
+> ```
+
+> **Important:** Use **multiple worker nodes** in the kind cluster to support installation profiles like `minimal-prod` with multiple Kafka brokers. The NGINX ingress controller must be **pinned to the control-plane node** because host-port bindings are on the control-plane only.
+
+---
+
+## 1. Create the kind Cluster
+
+Use the provided `kind-config.yaml`, which defines one control-plane node (with host port mappings) and two worker nodes:
+
+```bash
+cd ~/ibm/event-automation
+kind create cluster -n confluent --config kind-config.yaml
+```
+
+**Output:**
+
+```
+Creating cluster "confluent" ...
+ ✓ Ensuring node image (kindest/node:v1.27.1) 🖼
+ ✓ Preparing nodes 📦 📦 📦
+ ✓ Writing configuration 📜
+ ✓ Starting control-plane 🕹️
+ ✓ Installing CNI 🔌
+ ✓ Installing StorageClass 💾
+ ✓ Joining worker nodes 🚜
+Set kubectl context to "kind-confluent"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-confluent
+```
+
+Verify the cluster nodes and port bindings:
+
+```bash
+docker ps
+```
+
+**Output:**
+
+```
+CONTAINER ID   IMAGE                  COMMAND                  CREATED              STATUS              PORTS                                                                                         NAMES
+f8200ade7862   kindest/node:v1.27.1   "/usr/local/bin/entr…"   About a minute ago   Up About a minute   0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp, 0.0.0.0:9094->9094/tcp, 127.0.0.1:39089->6443/tcp   confluent-control-plane
+a633e7f26f10   kindest/node:v1.27.1   "/usr/local/bin/entr…"   About a minute ago   Up About a minute                                                                                                 confluent-worker2
+e0efd40eda9f   kindest/node:v1.27.1   "/usr/local/bin/entr…"   About a minute ago   Up About a minute                                                                                                 confluent-worker
+```
+
+---
+
+## 2. Add the IBM Helm Repository
+
+```bash
+helm repo add ibm-helm https://raw.githubusercontent.com/IBM/charts/master/repo/ibm-helm
+```
+
+**Output:**
+
+```
+"ibm-helm" has been added to your repositories
+```
+
+---
+
+## 3. Install Cluster-Scoped CRDs
+
+Install cluster-scoped Custom Resource Definitions (CRDs) first. Example: `crd-release-name=es-crds`, `namespace=confluent`.
+
+```bash
+helm install es-crds ibm-helm/ibm-eventstreams-operator \
+  -n confluent \
+  --set namespaceScopedResources=false \
+  --create-namespace
+```
+
+**Output:**
+
+```
+NAME: es-crds
+LAST DEPLOYED: Sat Jun 13 05:13:57 2026
+NAMESPACE: confluent
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+====
+    IBM Confidential
+    © Copyright IBM Corp. 2020, 2024
+====
+
+ibm-eventstreams-operator version 12.3.1 - CRDs installed.
+
+Your release is named es-crds.
+
+Custom Resource Definitions (CRDs) have been installed.
+
+Next step: Install the Event Streams operator in your target namespace(s) using:
+  helm install <release-name> <chart> -n <namespace> --set clusterScopedResources=false
+```
+
+---
+
+## 4. Install the Event Streams Operator
+
+```bash
+helm install eventstreams ibm-helm/ibm-eventstreams-operator \
+  -n my-eventstreams \
+  --set clusterScopedResources=false \
+  --set watchAnyNamespace=true \
+  --create-namespace
+```
+
+**Output:**
+
+```
+NAME: eventstreams
+LAST DEPLOYED: Sat Jun 13 05:15:41 2026
+NAMESPACE: my-eventstreams
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+====
+    IBM Confidential
+    © Copyright IBM Corp. 2020, 2024
+====
+
+ibm-eventstreams-operator version 12.3.1 installed.
+
+Your release is named eventstreams.
+
+The Event Streams operator has been installed in namespace my-eventstreams.
+Note: CRDs were skipped. Ensure CRDs are installed separately before creating Event Streams instances.
+```
+
+Verify the operator is running (typically ready in under 1 minute):
+
+```bash
+kubectl get deploy eventstreams-cluster-operator -n my-eventstreams
+```
+
+**Output:**
+
+```
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE
+eventstreams-cluster-operator   1/1     1            1           3m20s
+```
+
+---
+
+## 5. Create the IBM Entitlement Key Secret
+
+Obtain your entitlement key from the [IBM Container Library](https://myibm.ibm.com/products-services/containerlibrary), then create a pull secret:
+
+```bash
+kubectl create secret docker-registry ibm-entitlement-key \
+  --docker-username=cp \
+  --docker-password="<YOUR_IBM_ENTITLEMENT_KEY>" \
+  --docker-server="cp.icr.io" \
+  -n my-eventstreams
+```
+
+**Output:**
+
+```
+secret/ibm-entitlement-key created
+```
+
+> **Warning:** Never commit your entitlement key to source control. Store it in a secrets manager or pass it via environment variable at deploy time.
+
+---
+
+## 6. Install NGINX Ingress Controller
+
+Because this deployment runs on kind inside a remote EC2 instance, you must:
+
+1. Enable **SSL passthrough** (required by IBM Event Streams).
+2. Configure **host ports** so EC2 can route HTTP/HTTPS traffic into the Docker containers.
+3. Pin the ingress controller to the **control-plane** node.
+
+Replace `<EC2_PUBLIC_IP>` with your instance's public IP (e.g. `18.220.31.188`).
+
+```bash
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+```
+
+Label the control-plane node so the ingress controller schedules there:
+
+```bash
+kubectl label node confluent-control-plane ingress-ready=true
+```
+
+Install ingress-nginx:
+
+```bash
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --create-namespace \
+  --set controller.kind=Deployment \
+  --set controller.replicaCount=1 \
+  --set controller.hostPort.enabled=true \
+  --set controller.service.type=NodePort \
+  --set controller.ingressClassResource.name=nginx \
+  --set controller.ingressClass=nginx \
+  --set controller.extraArgs.enable-ssl-passthrough=true \
+  --set controller.publishService.enabled=false \
+  --set-string controller.extraArgs.publish-status-address=<EC2_PUBLIC_IP> \
+  --set-string controller.nodeSelector.ingress-ready=true \
+  --set controller.tolerations[0].key=node-role.kubernetes.io/control-plane \
+  --set controller.tolerations[0].operator=Exists \
+  --set controller.tolerations[0].effect=NoSchedule
+```
+
+**Output:**
+
+```
+NAME: ingress-nginx
+LAST DEPLOYED: Wed Jun 17 21:52:11 2026
+NAMESPACE: ingress-nginx
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+The ingress-nginx controller has been installed.
+```
+
+Confirm the controller is on the control-plane node (not a worker):
+
+```bash
+kubectl get pods -n ingress-nginx -o wide
+```
+
+**Output:**
+
+```
+NAME                                        READY   STATUS    RESTARTS   AGE    IP           NODE                      NOMINATED NODE   READINESS GATES
+ingress-nginx-controller-75bbf79b77-rrzwv   1/1     Running   0          8m7s   10.244.0.5   confluent-control-plane   <none>           <none>
+```
+
+Note the ingress class and storage class names — you will need them when editing `minimal-prod.yaml`:
+
+```bash
+kubectl get ingressclass
+```
+
+**Output:**
+
+```
+NAME    CONTROLLER             PARAMETERS   AGE
+nginx   k8s.io/ingress-nginx   <none>       107s
+```
+
+```bash
+kubectl get storageclass
+```
+
+**Output:**
+
+```
+NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  10m
+```
+
+> **Note:** Use ingress class `nginx` and storage class `standard` in the Event Streams custom resource.
+
+---
+
+## 7. Configure and Deploy the Event Streams Instance
+
+Edit `minimal-prod.yaml` before applying:
+
+1. Set `spec.license.accept` to `true`.
+2. Replace `<HOSTNAME>` placeholders with sslip.io hostnames based on your EC2 public IP.
+   - Example: for IP `18.220.31.188`, use `adminui.18-220-31-188.sslip.io`.
+3. Set `class: nginx` for all ingress endpoints.
+4. Set `class: standard` for storage.
+
+Example diff (original vs. configured):
+
+```bash
+sdiff -s minimal-prod.yaml.orig minimal-prod.yaml
+```
+
+**Output:**
+
+```
+    accept: false					      |	    accept: true
+        host: <HOSTNAME>				      |	        host: adminapi.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>				      |	        class: nginx
+        host: <HOSTNAME>				      |	        host: adminui.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>				      |	        class: nginx
+        host: <HOSTNAME>				      |	        host: apicurio.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>				      |	        class: nginx
+        host: <HOSTNAME>				      |	        host: rest.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>				      |	        class: nginx
+              host: <HOSTNAME>				      |	              host: kafka.18-220-31-188.sslip.io
+            hostTemplate: broker-{nodeId}.<HOSTNAME>	      |	            hostTemplate: broker-{nodeId}.18-220-31-188.sslip.io
+            class: <INGRESS-CLASS>			      |	            class: nginx
+          class: ''					      |	          class: standard
+          class: ''					      |	          class: standard
+```
+
+Deploy the instance:
+
+```bash
+kubectl apply -f minimal-prod.yaml -n my-eventstreams
+```
+
+**Output:**
+
+```
+eventstreams.eventstreams.ibm.com/minimal-prod created
+```
+
+---
+
+## 8. Verify the Deployment
+
+The instance typically reaches `Ready` status in under 5 minutes.
+
+```bash
+kubectl get eventstreams -n my-eventstreams
+```
+
+**Output:**
+
+```
+NAME           STATUS
+minimal-prod   Ready
+```
+
+```bash
+kubectl get all -n my-eventstreams
+```
+
+**Output (abbreviated):**
+
+```
+NAME                                                 READY   STATUS    RESTARTS        AGE
+pod/eventstreams-cluster-operator-6f484c4bf7-z7nf5   1/1     Running   0               18m
+pod/minimal-prod-controller-0                        1/1     Running   0               6m35s
+pod/minimal-prod-controller-1                        1/1     Running   0               6m35s
+pod/minimal-prod-controller-2                        1/1     Running   0               6m35s
+pod/minimal-prod-entity-operator-844f775c7f-hvhv7    2/2     Running   0               4m25s
+pod/minimal-prod-ibm-es-ac-reg-64fdf49545-lf6tg      2/2     Running   1 (105s ago)    3m58s
+pod/minimal-prod-ibm-es-admapi-867c49ccf-29l7t       1/1     Running   0               3m56s
+pod/minimal-prod-ibm-es-recapi-564b76c44c-xccms      1/1     Running   0               3m57s
+pod/minimal-prod-ibm-es-ui-6bd7fc9995-krjmj          2/2     Running   0               3m56s
+pod/minimal-prod-kafka-3                             1/1     Running   1 (4m55s ago)   6m35s
+pod/minimal-prod-kafka-4                             1/1     Running   0               6m35s
+pod/minimal-prod-kafka-5                             1/1     Running   1 (4m55s ago)   6m35s
+...
+NAME                                             STATUS
+eventstreams.eventstreams.ibm.com/minimal-prod   Ready
+```
+
+```bash
+kubectl get ingress -n my-eventstreams
+```
+
+**Output:**
+
+```
+NAME                                 CLASS   HOSTS                             ADDRESS         PORTS     AGE
+minimal-prod-ibm-es-ac-reg-ingress   nginx   apicurio.18-220-31-188.sslip.io   18.220.31.188   80, 443   4m36s
+minimal-prod-ibm-es-admapi-ingress   nginx   adminapi.18-220-31-188.sslip.io   18.220.31.188   80, 443   4m35s
+minimal-prod-ibm-es-recapi-ingress   nginx   rest.18-220-31-188.sslip.io       18.220.31.188   80, 443   4m35s
+minimal-prod-ibm-es-ui-ingress       nginx   adminui.18-220-31-188.sslip.io    18.220.31.188   80, 443   4m34s
+minimal-prod-kafka-3                 nginx   broker-3.18-220-31-188.sslip.io   18.220.31.188   80, 443   7m58s
+minimal-prod-kafka-4                 nginx   broker-4.18-220-31-188.sslip.io   18.220.31.188   80, 443   7m58s
+minimal-prod-kafka-5                 nginx   broker-5.18-220-31-188.sslip.io   18.220.31.188   80, 443   7m58s
+minimal-prod-kafka-bootstrap         nginx   kafka.18-220-31-188.sslip.io      18.220.31.188   80, 443   7m58s
+```
+
+---
+
+## 9. Configure Local DNS (/etc/hosts)
+
+On your **local machine** (not the EC2 host), add entries so sslip.io hostnames resolve to the EC2 public IP:
+
+```bash
+# /etc/hosts — Event Streams on EC2
+<EC2_PUBLIC_IP> apicurio.18-220-31-188.sslip.io
+<EC2_PUBLIC_IP> adminapi.18-220-31-188.sslip.io
+<EC2_PUBLIC_IP> adminui.18-220-31-188.sslip.io
+<EC2_PUBLIC_IP> rest.18-220-31-188.sslip.io
+<EC2_PUBLIC_IP> broker-3.18-220-31-188.sslip.io
+<EC2_PUBLIC_IP> broker-4.18-220-31-188.sslip.io
+<EC2_PUBLIC_IP> broker-5.18-220-31-188.sslip.io
+<EC2_PUBLIC_IP> kafka.18-220-31-188.sslip.io
+```
+
+> **Note:** sslip.io automatically resolves `*.<ip-with-dashes>.sslip.io` to the dotted IP, but adding `/etc/hosts` entries ensures reliable resolution from your workstation.
+
+---
+
+## 10. Create the Admin User
+
+Create the admin user **before** logging into the Admin UI:
+
+```bash
+kubectl apply -f kafkauser.yaml -n my-eventstreams
+```
+
+**Output:**
+
+```
+Warning: Version v1beta2 of the KafkaUser API is deprecated. Please use the v1 version instead.
+kafkauser.eventstreams.ibm.com/admin created
+```
+
+Retrieve the username and secret name:
+
+```bash
+kubectl get kafkauser admin -n my-eventstreams \
+  -o jsonpath='{"username: "}{.status.username}{"\nsecret: "}{.status.secret}{"\n"}'
+```
+
+**Output:**
+
+```
+username: admin
+secret: admin
+```
+
+Retrieve the password:
+
+```bash
+kubectl get secret admin -n my-eventstreams \
+  -o jsonpath='{.data.password}' | base64 -d; echo
+```
+
+**Output:**
+
+```
+<ADMIN_PASSWORD>
+```
+
+> **Warning:** The password is generated at creation time. Save it securely; you will need it for the Admin UI and CLI login.
+
+---
+
+## 11. Access the Admin UI
+
+Open in your browser:
+
+```
+https://adminui.18-220-31-188.sslip.io/
+```
+
+Log in with:
+
+- **Username:** `admin`
+- **Password:** value retrieved from the secret above
+
+---
+
+## 12. Install the Event Streams CLI
+
+The CLI supports:
+
+- Creating, deleting, and updating Kafka topics
+- Managing Kafka message schemas
+- Managing geo-replication
+- Displaying cluster configuration and credentials
+
+**Download:** In the Admin UI, go to **Toolbox → Command-line Interface** and download `kubectl-es-plugin.bin`.
+
+Install on the EC2 host:
+
+```bash
+chmod 755 kubectl-es-plugin.bin
+sudo mv kubectl-es-plugin.bin /usr/local/bin/kubectl-es
+```
+
+Verify:
+
+```bash
+kubectl es
+```
+
+**Output:**
+
+```
+NAME:
+   kubectl event-streams - Manage IBM Event Streams
+
+USAGE:
+   kubectl es [global options] command [command options] [arguments...]
+
+VERSION:
+   12.3.1 (2604270910)
+
+COMMANDS:
+   help, h  Shows a list of commands or help for one command
+```
+
+Initialize the CLI session:
+
+```bash
+kubectl es init -n my-eventstreams \
+  --auth-type scram-sha-512 \
+  --username admin \
+  --password <ADMIN_PASSWORD> \
+  --schema-reg-url https://apicurio.18-220-31-188.sslip.io
+```
+
+**Output:**
+
+```
+Namespace:                         my-eventstreams
+Name:                              minimal-prod
+Event Streams API endpoint:        https://adminapi.18-220-31-188.sslip.io
+Event Streams API status:          OK
+Event Streams UI address:          https://adminui.18-220-31-188.sslip.io
+Apicurio Registry endpoint:        https://apicurio.18-220-31-188.sslip.io
+Event Streams bootstrap address:   kafka.18-220-31-188.sslip.io:443
+OK
+```
+
+---
+
+## 13. Manage Kafka Topics
+
+### Create a topic via CLI
+
+```bash
+kubectl es topic-create \
+  --name my-topic \
+  --partitions 1 \
+  --replication-factor 1 \
+  --config retention.ms=86400000
+```
+
+**Output:**
+
+```
+Created topic my-topic
+OK
+```
+
+### Create a topic via YAML
+
+```bash
+kubectl apply -f kafkatopic.yaml -n my-eventstreams
+```
+
+**Output:**
+
+```
+Warning: Version v1beta2 of the KafkaTopic API is deprecated. Please use the v1 version instead.
+kafkatopic.eventstreams.ibm.com/my-yaml-topic created
+```
+
+### Delete a topic via CLI
+
+```bash
+kubectl es topic-delete --name my-yaml-topic
+```
+
+**Output:**
+
+```
+Really delete topic 'my-yaml-topic'? [y/N]> y
+Topic my-yaml-topic deleted successfully
+OK
+```
+
+> **Practical rule:**
+>
+> | Created with | Delete with |
+> |---|---|
+> | `kubectl es topic-create` | `kubectl es topic-delete` |
+> | `kubectl apply -f kafkatopic.yaml` | `kubectl delete kafkatopic <name> -n my-eventstreams` |
+
+---
+
+## 14. Run the Starter Application
+
+Download the demo JAR and configure it from the Admin UI.
+
+**Option A:** Admin UI → **Toolbox → Starter application**
+
+**Option B:** Manual setup:
+
+```bash
+mkdir app && cd app
+wget http://github.com/ibm-messaging/kafka-java-vertx-starter/releases/download/1.1.5/demo-all.jar
+```
+
+In the Admin UI (**Toolbox → Starter application → Configure & run starter application**):
+
+| Setting | Value |
+|---|---|
+| App name | `starter-app` |
+| Topic name | `starter_topic` |
+
+Download `starter-app_properties.zip`, then:
+
+```bash
+unzip starter-app_properties.zip
+ls -ltr
+```
+
+**Output:**
+
+```
+-rw-rw-r-- 1 ubuntu ubuntu     1702 Jun 18 01:48 truststore.p12
+-rw-rw-r-- 1 ubuntu ubuntu      859 Jun 18 01:48 kafka.properties
+-rw-r--r-- 1 ubuntu ubuntu     2387 Jun 18 01:49 starter-app_properties.zip
+-rw-rw-r-- 1 ubuntu ubuntu 38510290 Jun 18 01:49 demo-all.jar
+```
+
+Run the application:
+
+```bash
+java -Dproperties_path=./kafka.properties -jar demo-all.jar
+```
+
+**Output:**
+
+```
+2026-06-18 01:55:25,459 INFO [vert.x-eventloop-thread-0] kafka.vertx.demo.Main - Application version: 1.1.5
+2026-06-18 01:55:25,908 INFO [vert.x-eventloop-thread-2] kafka.vertx.demo.WebSocketServer - 🚀 WebSocketServer started
+2026-06-18 01:55:26,432 INFO [vert.x-eventloop-thread-1] kafka.vertx.demo.PeriodicProducer - 🚀 PeriodicProducer started
+2026-06-18 01:55:26,433 INFO [vert.x-eventloop-thread-0] kafka.vertx.demo.Main - ✅ Application started in 1357ms
+2026-06-18 01:56:15,590 INFO [vert.x-eventloop-thread-2] kafka.vertx.demo.WebSocketServer - Subscribed to starter_topic
+2026-06-18 01:58:59,308 INFO [vert.x-eventloop-thread-1] kafka.vertx.demo.PeriodicProducer - Producing Kafka records with message template: {   {"name": "Jane Doe",   "empid": "EMP-84920",   "zipcode": "75070" }
+2026-06-18 01:59:13,764 INFO [vert.x-eventloop-thread-1] kafka.vertx.demo.PeriodicProducer - Stopped producing Kafka records
+```
+
+---
+
+## Troubleshooting Notes
+
+| Issue | Resolution |
+|---|---|
+| Port 80 already in use | `sudo systemctl stop apache2` before creating the kind cluster |
+| Ingress not reachable from outside EC2 | Confirm security group allows inbound **80**, **443**, **9094**; verify ingress controller is on `confluent-control-plane` |
+| Event Streams pods stuck pending | Check storage class (`standard`) and worker node capacity |
+| SSL/TLS errors in browser | Ensure SSL passthrough is enabled on ingress-nginx (`enable-ssl-passthrough=true`) |
+| Admin UI login fails | Create the `admin` KafkaUser first; retrieve password from the `admin` secret |
+| Deprecated API warnings | `v1beta2` KafkaUser/KafkaTopic APIs show deprecation warnings; migrate to `v1` in future updates |
+
+---
+
+## Files in This Directory
+
+| File | Purpose |
+|---|---|
+| `kind-config.yaml` | kind cluster definition with host port mappings and worker nodes |
+| `minimal-prod.yaml` | Event Streams custom resource (minimal production profile) |
+| `kafkauser.yaml` | Admin user definition |
+| `kafkatopic.yaml` | Sample Kafka topic custom resource |
+| `app/kafka.properties` | Starter application Kafka connection properties |
+
+---
+
+## Additional Resources
+
+- [Event Streams Documentation](https://ibm.github.io/event-automation/es/)
+- [CR Examples (GitHub)](https://github.com/IBM/ibm-event-automation/tree/main/event-streams/cr-examples/eventstreams/kubernetes)
+- [IBM Container Library (Entitlement Key)](https://myibm.ibm.com/products-services/containerlibrary)
