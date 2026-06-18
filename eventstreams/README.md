@@ -99,12 +99,6 @@ e0efd40eda9f   kindest/node:v1.27.1   "/usr/local/bin/entr…"   About a minute 
 helm repo add ibm-helm https://raw.githubusercontent.com/IBM/charts/master/repo/ibm-helm
 ```
 
-**Output:**
-
-```
-"ibm-helm" has been added to your repositories
-```
-
 ---
 
 ## 3. Install Cluster-Scoped CRDs
@@ -274,11 +268,7 @@ Confirm the controller is on the control-plane node (not a worker):
 
 ```bash
 kubectl get pods -n ingress-nginx -o wide
-```
 
-**Output:**
-
-```
 NAME                                        READY   STATUS    RESTARTS   AGE    IP           NODE                      NOMINATED NODE   READINESS GATES
 ingress-nginx-controller-75bbf79b77-rrzwv   1/1     Running   0          8m7s   10.244.0.5   confluent-control-plane   <none>           <none>
 ```
@@ -287,22 +277,14 @@ Note the ingress class and storage class names — you will need them when editi
 
 ```bash
 kubectl get ingressclass
-```
 
-**Output:**
-
-```
 NAME    CONTROLLER             PARAMETERS   AGE
 nginx   k8s.io/ingress-nginx   <none>       107s
 ```
 
 ```bash
 kubectl get storageclass
-```
 
-**Output:**
-
-```
 NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  10m
 ```
@@ -330,34 +312,29 @@ sdiff -s minimal-prod.yaml.orig minimal-prod.yaml
 **Output:**
 
 ```
-    accept: false					      |	    accept: true
-        host: <HOSTNAME>				      |	        host: adminapi.18-220-31-188.sslip.io
-        class: <INGRESS-CLASS>				      |	        class: nginx
-        host: <HOSTNAME>				      |	        host: adminui.18-220-31-188.sslip.io
-        class: <INGRESS-CLASS>				      |	        class: nginx
-        host: <HOSTNAME>				      |	        host: apicurio.18-220-31-188.sslip.io
-        class: <INGRESS-CLASS>				      |	        class: nginx
-        host: <HOSTNAME>				      |	        host: rest.18-220-31-188.sslip.io
-        class: <INGRESS-CLASS>				      |	        class: nginx
-              host: <HOSTNAME>				      |	              host: kafka.18-220-31-188.sslip.io
-            hostTemplate: broker-{nodeId}.<HOSTNAME>	      |	            hostTemplate: broker-{nodeId}.18-220-31-188.sslip.io
-            class: <INGRESS-CLASS>			      |	            class: nginx
-          class: ''					      |	          class: standard
-          class: ''					      |	          class: standard
+    accept: false					                           |	    accept: true
+        host: <HOSTNAME>				                     |	        host: adminapi.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>				               |      	  class: nginx
+        host: <HOSTNAME>				                     |	        host: adminui.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>				               |      	  class: nginx
+        host: <HOSTNAME>				                     |	        host: apicurio.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>				               |      	  class: nginx
+        host: <HOSTNAME>				                     |	        host: rest.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>				               |      	  class: nginx
+              host: <HOSTNAME>				               |      	        host: kafka.18-220-31-188.sslip.io
+            hostTemplate: broker-{nodeId}.<HOSTNAME> |	            hostTemplate: broker-{nodeId}.18-220-31-188.sslip.io
+            class: <INGRESS-CLASS>		               |              class: nginx
+          class: ''					                         |	          class: standard
+          class: ''					                         |	          class: standard
 ```
 
 Deploy the instance:
 
 ```bash
 kubectl apply -f minimal-prod.yaml -n my-eventstreams
-```
 
-**Output:**
-
-```
 eventstreams.eventstreams.ibm.com/minimal-prod created
 ```
-
 ---
 
 ## 8. Verify the Deployment
@@ -366,22 +343,14 @@ The instance typically reaches `Ready` status in under 5 minutes.
 
 ```bash
 kubectl get eventstreams -n my-eventstreams
-```
 
-**Output:**
-
-```
 NAME           STATUS
 minimal-prod   Ready
 ```
 
 ```bash
 kubectl get all -n my-eventstreams
-```
 
-**Output (abbreviated):**
-
-```
 NAME                                                 READY   STATUS    RESTARTS        AGE
 pod/eventstreams-cluster-operator-6f484c4bf7-z7nf5   1/1     Running   0               18m
 pod/minimal-prod-controller-0                        1/1     Running   0               6m35s
@@ -395,18 +364,46 @@ pod/minimal-prod-ibm-es-ui-6bd7fc9995-krjmj          2/2     Running   0        
 pod/minimal-prod-kafka-3                             1/1     Running   1 (4m55s ago)   6m35s
 pod/minimal-prod-kafka-4                             1/1     Running   0               6m35s
 pod/minimal-prod-kafka-5                             1/1     Running   1 (4m55s ago)   6m35s
-...
+
+NAME                                            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)     AGE
+service/eventstreams-cluster-operator           ClusterIP   10.96.63.184    <none>        443/TCP     18m
+service/minimal-prod-ibm-es-ac-reg-ingress      ClusterIP   10.96.189.247   <none>        8002/TCP    3m58s
+service/minimal-prod-ibm-es-ac-reg-internal     ClusterIP   10.96.235.235   <none>        7443/TCP    3m58s
+service/minimal-prod-ibm-es-admapi-ingress      ClusterIP   10.96.227.24    <none>        8001/TCP    3m57s
+service/minimal-prod-ibm-es-admapi-internal     ClusterIP   10.96.15.108    <none>        7443/TCP    3m57s
+service/minimal-prod-ibm-es-recapi-ingress      ClusterIP   10.96.195.10    <none>        8003/TCP    3m58s
+service/minimal-prod-ibm-es-recapi-internal     ClusterIP   10.96.171.39    <none>        7443/TCP    3m57s
+service/minimal-prod-ibm-es-ui-ingress          ClusterIP   10.96.191.223   <none>        3000/TCP    3m56s
+service/minimal-prod-kafka-3                    ClusterIP   10.96.148.29    <none>        9094/TCP    7m21s
+service/minimal-prod-kafka-4                    ClusterIP   10.96.186.185   <none>        9094/TCP    7m21s
+service/minimal-prod-kafka-5                    ClusterIP   10.96.215.110   <none>        9094/TCP    7m21s
+service/minimal-prod-kafka-bootstrap            ClusterIP   10.96.190.132   <none>        9091/TCP,9093/TCP                              7m21s
+service/minimal-prod-kafka-brokers              ClusterIP   None            <none>        9090/TCP,9091/TCP,8443/TCP,9093/TCP,9404/TCP   7m21s
+service/minimal-prod-kafka-external-bootstrap   ClusterIP   10.96.50.109    <none>        9094/TCP    7m21s
+
+NAME                                            READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/eventstreams-cluster-operator   1/1     1            1           18m
+deployment.apps/minimal-prod-entity-operator    1/1     1            1           4m25s
+deployment.apps/minimal-prod-ibm-es-ac-reg      1/1     1            1           3m58s
+deployment.apps/minimal-prod-ibm-es-admapi      1/1     1            1           3m56s
+deployment.apps/minimal-prod-ibm-es-recapi      1/1     1            1           3m57s
+deployment.apps/minimal-prod-ibm-es-ui          1/1     1            1           3m56s
+
+NAME                                                       DESIRED   CURRENT   READY   AGE
+replicaset.apps/eventstreams-cluster-operator-6f484c4bf7   1         1         1       18m
+replicaset.apps/minimal-prod-entity-operator-844f775c7f    1         1         1       4m25s
+replicaset.apps/minimal-prod-ibm-es-ac-reg-64fdf49545      1         1         1       3m58s
+replicaset.apps/minimal-prod-ibm-es-admapi-867c49ccf       1         1         1       3m56s
+replicaset.apps/minimal-prod-ibm-es-recapi-564b76c44c      1         1         1       3m57s
+replicaset.apps/minimal-prod-ibm-es-ui-6bd7fc9995          1         1         1       3m56s
+
 NAME                                             STATUS
 eventstreams.eventstreams.ibm.com/minimal-prod   Ready
 ```
 
 ```bash
 kubectl get ingress -n my-eventstreams
-```
 
-**Output:**
-
-```
 NAME                                 CLASS   HOSTS                             ADDRESS         PORTS     AGE
 minimal-prod-ibm-es-ac-reg-ingress   nginx   apicurio.18-220-31-188.sslip.io   18.220.31.188   80, 443   4m36s
 minimal-prod-ibm-es-admapi-ingress   nginx   adminapi.18-220-31-188.sslip.io   18.220.31.188   80, 443   4m35s
@@ -446,11 +443,7 @@ Create the admin user **before** logging into the Admin UI:
 
 ```bash
 kubectl apply -f kafkauser.yaml -n my-eventstreams
-```
 
-**Output:**
-
-```
 Warning: Version v1beta2 of the KafkaUser API is deprecated. Please use the v1 version instead.
 kafkauser.eventstreams.ibm.com/admin created
 ```
@@ -460,11 +453,7 @@ Retrieve the username and secret name:
 ```bash
 kubectl get kafkauser admin -n my-eventstreams \
   -o jsonpath='{"username: "}{.status.username}{"\nsecret: "}{.status.secret}{"\n"}'
-```
 
-**Output:**
-
-```
 username: admin
 secret: admin
 ```
@@ -474,11 +463,7 @@ Retrieve the password:
 ```bash
 kubectl get secret admin -n my-eventstreams \
   -o jsonpath='{.data.password}' | base64 -d; echo
-```
 
-**Output:**
-
-```
 <ADMIN_PASSWORD>
 ```
 
@@ -525,7 +510,7 @@ Verify:
 kubectl es
 ```
 
-**Output:**
+**Output: (abbreviated)**
 
 ```
 NAME:
@@ -539,6 +524,7 @@ VERSION:
 
 COMMANDS:
    help, h  Shows a list of commands or help for one command
+   . . .
 ```
 
 Initialize the CLI session:
@@ -549,11 +535,7 @@ kubectl es init -n my-eventstreams \
   --username admin \
   --password <ADMIN_PASSWORD> \
   --schema-reg-url https://apicurio.18-220-31-188.sslip.io
-```
 
-**Output:**
-
-```
 Namespace:                         my-eventstreams
 Name:                              minimal-prod
 Event Streams API endpoint:        https://adminapi.18-220-31-188.sslip.io
@@ -576,11 +558,7 @@ kubectl es topic-create \
   --partitions 1 \
   --replication-factor 1 \
   --config retention.ms=86400000
-```
 
-**Output:**
-
-```
 Created topic my-topic
 OK
 ```
@@ -589,11 +567,7 @@ OK
 
 ```bash
 kubectl apply -f kafkatopic.yaml -n my-eventstreams
-```
 
-**Output:**
-
-```
 Warning: Version v1beta2 of the KafkaTopic API is deprecated. Please use the v1 version instead.
 kafkatopic.eventstreams.ibm.com/my-yaml-topic created
 ```
@@ -602,11 +576,7 @@ kafkatopic.eventstreams.ibm.com/my-yaml-topic created
 
 ```bash
 kubectl es topic-delete --name my-yaml-topic
-```
 
-**Output:**
-
-```
 Really delete topic 'my-yaml-topic'? [y/N]> y
 Topic my-yaml-topic deleted successfully
 OK
@@ -661,11 +631,7 @@ Run the application:
 
 ```bash
 java -Dproperties_path=./kafka.properties -jar demo-all.jar
-```
 
-**Output:**
-
-```
 2026-06-18 01:55:25,459 INFO [vert.x-eventloop-thread-0] kafka.vertx.demo.Main - Application version: 1.1.5
 2026-06-18 01:55:25,908 INFO [vert.x-eventloop-thread-2] kafka.vertx.demo.WebSocketServer - 🚀 WebSocketServer started
 2026-06-18 01:55:26,432 INFO [vert.x-eventloop-thread-1] kafka.vertx.demo.PeriodicProducer - 🚀 PeriodicProducer started
@@ -675,31 +641,13 @@ java -Dproperties_path=./kafka.properties -jar demo-all.jar
 2026-06-18 01:59:13,764 INFO [vert.x-eventloop-thread-1] kafka.vertx.demo.PeriodicProducer - Stopped producing Kafka records
 ```
 
----
+Access the Starter App UI
 
-## Troubleshooting Notes
+Open in your browser:
 
-| Issue | Resolution |
-|---|---|
-| Port 80 already in use | `sudo systemctl stop apache2` before creating the kind cluster |
-| Ingress not reachable from outside EC2 | Confirm security group allows inbound **80**, **443**, **9094**; verify ingress controller is on `confluent-control-plane` |
-| Event Streams pods stuck pending | Check storage class (`standard`) and worker node capacity |
-| SSL/TLS errors in browser | Ensure SSL passthrough is enabled on ingress-nginx (`enable-ssl-passthrough=true`) |
-| Admin UI login fails | Create the `admin` KafkaUser first; retrieve password from the `admin` secret |
-| Deprecated API warnings | `v1beta2` KafkaUser/KafkaTopic APIs show deprecation warnings; migrate to `v1` in future updates |
-
----
-
-## Files in This Directory
-
-| File | Purpose |
-|---|---|
-| `kind-config.yaml` | kind cluster definition with host port mappings and worker nodes |
-| `minimal-prod.yaml` | Event Streams custom resource (minimal production profile) |
-| `kafkauser.yaml` | Admin user definition |
-| `kafkatopic.yaml` | Sample Kafka topic custom resource |
-| `app/kafka.properties` | Starter application Kafka connection properties |
-
+```
+http://<EC2_PUBLIC_IP>:8080/
+```
 ---
 
 ## Additional Resources
