@@ -601,7 +601,9 @@ OK
 
 ## 14. Run the Starter Application
 
-Download the demo JAR and configure it from the Admin UI.
+Download the demo JAR and configure it from the Admin UI. 
+
+Use this UI option for  latest jar and the manual step for a specific version.
 
 **Option A:** Admin UI → **Toolbox → Starter application**
 
@@ -634,6 +636,7 @@ ls -ltr
 -rw-r--r-- 1 ubuntu ubuntu     2387 Jun 18 01:49 starter-app_properties.zip
 -rw-rw-r-- 1 ubuntu ubuntu 38510290 Jun 18 01:49 demo-all.jar
 ```
+> **Note:** The kafka.properties & truststore.p12 is dynamically created by the UI Starter Application. The attached kafka.properties & truststore.p12 is for reference only.
 
 Run the application:
 
