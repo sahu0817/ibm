@@ -1,4 +1,4 @@
-# IBM Event Streams — Demo Deployment on Kubernetes (kind on EC2)
+# IBM EventStreams — Demo Deployment on Kubernetes (kind on EC2)
 
 This guide documents deploying a demo IBM Event Streams instance on a **kind** cluster running on an AWS EC2 instance. It follows the official installation guide:
 
