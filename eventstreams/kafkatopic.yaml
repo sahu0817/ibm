@@ -1,0 +1,15 @@
+apiVersion: eventstreams.ibm.com/v1beta2
+kind: KafkaTopic
+metadata:
+   name: my-yaml-topic
+   labels:
+     eventstreams.ibm.com/cluster: minimal-prod
+     backup.eventstreams.ibm.com/component: kafkatopic
+   namespace: my-eventstreams
+spec:
+   topicName: my_yaml_topic
+   partitions: 2
+   replicas: 2
+   config:
+     min.insync.replicas: '1'
+

@@ -1,0 +1,107 @@
+###############################################################################
+#
+# © Copyright IBM Corp. 2020, 2023, 2024
+#
+###############################################################################
+apiVersion: eventstreams.ibm.com/v1beta2
+kind: EventStreams
+metadata:
+  name: minimal-prod
+spec:
+  version: latest
+  license:
+    # By installing this product you accept the license terms at https://ibm.biz/ea-license
+    accept: true
+    license: "L-CYBH-K48BZQ"
+    use: "EventAutomationProduction"
+  adminApi:
+    endpoints:
+      - name: ingress
+        type: ingress
+        host: adminapi.18-220-31-188.sslip.io
+        class: nginx
+        containerPort: 8001
+  adminUI:
+    authentication:
+      - type: scram-sha-512
+    endpoints:
+      - name: ingress
+        type: ingress
+        host: adminui.18-220-31-188.sslip.io
+        class: nginx
+        containerPort: 3000
+  apicurioRegistry:
+    endpoints:
+      - name: ingress
+        type: ingress
+        host: apicurio.18-220-31-188.sslip.io
+        class: nginx
+        containerPort: 8002
+  restProducer:
+    endpoints:
+      - name: ingress
+        type: ingress
+        host: rest.18-220-31-188.sslip.io
+        class: nginx
+        containerPort: 8003
+  strimziOverrides:
+    kafka:
+      authorization:
+        type: simple
+      config:
+        log.cleaner.threads: 6
+        num.io.threads: 24
+        num.network.threads: 9
+        num.replica.fetchers: 3
+        offsets.topic.replication.factor: 3
+        default.replication.factor: 3
+        min.insync.replicas: 2
+        auto.create.topics.enable: 'false'
+      listeners:
+        - name: external
+          port: 9094
+          type: ingress
+          tls: true
+          authentication:
+            type: scram-sha-512
+          configuration:
+            bootstrap:
+              host: kafka.18-220-31-188.sslip.io
+            hostTemplate: broker-{nodeId}.18-220-31-188.sslip.io
+            class: nginx
+        - name: tls
+          port: 9093
+          type: internal
+          tls: true
+          authentication:
+            type: tls
+      metricsConfig:
+        type: jmxPrometheusExporter
+        valueFrom:
+          configMapKeyRef:
+            key: kafka-metrics-config.yaml
+            name: minimal-prod-metrics-config
+    nodePools:
+      - name: kafka
+        replicas: 3
+        storage:
+          type: persistent-claim
+          size: 2Gi
+          class: standard
+        roles:
+          - broker
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 100m
+          limits:
+            memory: 2048Mi
+            cpu: 1000m
+      - name: controller
+        replicas: 3
+        storage:
+          type: persistent-claim
+          size: 2Gi
+          class: standard
+        roles:
+          - controller
