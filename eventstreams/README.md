@@ -305,7 +305,7 @@ Edit `minimal-prod.yaml` before applying:
 3. Set `class: nginx` for all ingress endpoints.
 4. Set `class: standard` for storage.
 
-> **Note:** sslip.io automatically resolves `*.<ip-with-dashes>.sslip.io` to the dotted IP. If you chose to go with a custom hostname you need to provision DNS records
+> **Note:** FQDNs ending with sslip.io are magic DNS records that resolve directly to the IP address embedded inside the domain name itself. For example, 192.168.1.100.sslip.io automatically resolves to 192.168.1.100. If you choose to go with a custom hostname you need to provision DNS records
 
 Example diff (original vs. configured):
 
