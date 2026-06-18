@@ -295,6 +295,8 @@ standard (default)   rancher.io/local-path   Delete          WaitForFirstConsume
 
 ## 7. Configure and Deploy the Event Streams Instance
 
+Download the CR from ibm-event-automation [git repo](https://github.com/IBM/ibm-event-automation/tree/main/event-streams/cr-examples/eventstreams/kubernetes).
+
 Edit `minimal-prod.yaml` before applying:
 
 1. Set `spec.license.accept` to `true`.
@@ -312,20 +314,20 @@ sdiff -s minimal-prod.yaml.orig minimal-prod.yaml
 **Output:**
 
 ```
-    accept: false					                           |	    accept: true
-        host: <HOSTNAME>				                     |	        host: adminapi.18-220-31-188.sslip.io
-        class: <INGRESS-CLASS>				               |      	  class: nginx
-        host: <HOSTNAME>				                     |	        host: adminui.18-220-31-188.sslip.io
+    accept: false                                    |      accept: true
+        host: <HOSTNAME>                             |          host: adminapi.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>                       |          class: nginx
+        host: <HOSTNAME>                             |          host: adminui.18-220-31-188.sslip.io
         class: <INGRESS-CLASS>				               |      	  class: nginx
         host: <HOSTNAME>				                     |	        host: apicurio.18-220-31-188.sslip.io
         class: <INGRESS-CLASS>				               |      	  class: nginx
         host: <HOSTNAME>				                     |	        host: rest.18-220-31-188.sslip.io
         class: <INGRESS-CLASS>				               |      	  class: nginx
               host: <HOSTNAME>				               |      	        host: kafka.18-220-31-188.sslip.io
-            hostTemplate: broker-{nodeId}.<HOSTNAME> |	            hostTemplate: broker-{nodeId}.18-220-31-188.sslip.io
-            class: <INGRESS-CLASS>		               |              class: nginx
-          class: ''					                         |	          class: standard
-          class: ''					                         |	          class: standard
+            hostTemplate: broker-{nodeId}.<HOSTNAME> |              hostTemplate: broker-{nodeId}.18-220-31-188.sslip.io
+            class: <INGRESS-CLASS>                   |              class: nginx
+          class: ''                                  |            class: standard
+          class: ''                                  |            class: standard
 ```
 
 Deploy the instance:
