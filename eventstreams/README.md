@@ -217,7 +217,7 @@ Because this deployment runs on kind inside a remote EC2 instance, you must:
 2. Configure **host ports** so EC2 can route HTTP/HTTPS traffic into the Docker containers.
 3. Pin the ingress controller to the **control-plane** node.
 
-Replace `<EC2_PUBLIC_IP>` with your instance's public IP (e.g. `18.220.31.188`).
+Replace `<EC2_PUBLIC_IP>` with your instance's public IP (e.g. `99.999.99.999`).
 
 ```bash
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -301,7 +301,7 @@ Edit `minimal-prod.yaml` before applying:
 
 1. Set `spec.license.accept` to `true`.
 2. Replace `<HOSTNAME>` placeholders with sslip.io hostnames based on your EC2 public IP.
-   - Example: for IP `18.220.31.188`, use `adminui.18-220-31-188.sslip.io`.
+   - Example: for IP `99.999.99.999`, use `adminui.<99-999-99-999>.sslip.io`.
 3. Set `class: nginx` for all ingress endpoints.
 4. Set `class: standard` for storage.
 
@@ -315,16 +315,16 @@ sdiff -s minimal-prod.yaml.orig minimal-prod.yaml
 
 ```
     accept: false                                    |      accept: true
-        host: <HOSTNAME>                             |          host: adminapi.18-220-31-188.sslip.io
+        host: <HOSTNAME>                             |          host: adminapi.<ip-with-dashes>.sslip.io
         class: <INGRESS-CLASS>                       |          class: nginx
-        host: <HOSTNAME>                             |          host: adminui.18-220-31-188.sslip.io
+        host: <HOSTNAME>                             |          host: adminui.<ip-with-dashes>.sslip.io
         class: <INGRESS-CLASS>                       |          class: nginx
-        host: <HOSTNAME>                             |          host: apicurio.18-220-31-188.sslip.io
+        host: <HOSTNAME>                             |          host: apicurio.<ip-with-dashes>.sslip.io
         class: <INGRESS-CLASS>                       |          class: nginx
-        host: <HOSTNAME>                             |          host: rest.18-220-31-188.sslip.io
+        host: <HOSTNAME>                             |          host: rest.<ip-with-dashes>.sslip.io
         class: <INGRESS-CLASS>				               |          class: nginx
-              host: <HOSTNAME>                       |                host: kafka.18-220-31-188.sslip.io
-            hostTemplate: broker-{nodeId}.<HOSTNAME> |              hostTemplate: broker-{nodeId}.18-220-31-188.sslip.io
+              host: <HOSTNAME>                       |                host: kafka.<ip-with-dashes>.sslip.io
+            hostTemplate: broker-{nodeId}.<HOSTNAME> |              hostTemplate: broker-{nodeId}.<ip-with-dashes>.sslip.io
             class: <INGRESS-CLASS>                   |              class: nginx
           class: ''                                  |            class: standard
           class: ''                                  |            class: standard
@@ -407,14 +407,14 @@ eventstreams.eventstreams.ibm.com/minimal-prod   Ready
 kubectl get ingress -n my-eventstreams
 
 NAME                                 CLASS   HOSTS                             ADDRESS         PORTS     AGE
-minimal-prod-ibm-es-ac-reg-ingress   nginx   apicurio.18-220-31-188.sslip.io   18.220.31.188   80, 443   4m36s
-minimal-prod-ibm-es-admapi-ingress   nginx   adminapi.18-220-31-188.sslip.io   18.220.31.188   80, 443   4m35s
-minimal-prod-ibm-es-recapi-ingress   nginx   rest.18-220-31-188.sslip.io       18.220.31.188   80, 443   4m35s
-minimal-prod-ibm-es-ui-ingress       nginx   adminui.18-220-31-188.sslip.io    18.220.31.188   80, 443   4m34s
-minimal-prod-kafka-3                 nginx   broker-3.18-220-31-188.sslip.io   18.220.31.188   80, 443   7m58s
-minimal-prod-kafka-4                 nginx   broker-4.18-220-31-188.sslip.io   18.220.31.188   80, 443   7m58s
-minimal-prod-kafka-5                 nginx   broker-5.18-220-31-188.sslip.io   18.220.31.188   80, 443   7m58s
-minimal-prod-kafka-bootstrap         nginx   kafka.18-220-31-188.sslip.io      18.220.31.188   80, 443   7m58s
+minimal-prod-ibm-es-ac-reg-ingress   nginx   apicurio.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   4m36s
+minimal-prod-ibm-es-admapi-ingress   nginx   adminapi.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   4m35s
+minimal-prod-ibm-es-recapi-ingress   nginx   rest.<ip-with-dashes>.sslip.io       99.999.99.999   80, 443   4m35s
+minimal-prod-ibm-es-ui-ingress       nginx   adminui.<ip-with-dashes>.sslip.io    99.999.99.999   80, 443   4m34s
+minimal-prod-kafka-3                 nginx   broker-3.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   7m58s
+minimal-prod-kafka-4                 nginx   broker-4.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   7m58s
+minimal-prod-kafka-5                 nginx   broker-5.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   7m58s
+minimal-prod-kafka-bootstrap         nginx   kafka.<ip-with-dashes>.sslip.io      99.999.99.999   80, 443   7m58s
 ```
 
 ---
@@ -425,14 +425,14 @@ On your **local machine** (not the EC2 host), add entries so sslip.io hostnames 
 
 ```bash
 # /etc/hosts — Event Streams on EC2
-<EC2_PUBLIC_IP> apicurio.18-220-31-188.sslip.io
-<EC2_PUBLIC_IP> adminapi.18-220-31-188.sslip.io
-<EC2_PUBLIC_IP> adminui.18-220-31-188.sslip.io
-<EC2_PUBLIC_IP> rest.18-220-31-188.sslip.io
-<EC2_PUBLIC_IP> broker-3.18-220-31-188.sslip.io
-<EC2_PUBLIC_IP> broker-4.18-220-31-188.sslip.io
-<EC2_PUBLIC_IP> broker-5.18-220-31-188.sslip.io
-<EC2_PUBLIC_IP> kafka.18-220-31-188.sslip.io
+<EC2_PUBLIC_IP> apicurio.<ip-with-dashes>.sslip.io
+<EC2_PUBLIC_IP> adminapi.<ip-with-dashes>.sslip.io
+<EC2_PUBLIC_IP> adminui.<ip-with-dashes>.sslip.io
+<EC2_PUBLIC_IP> rest.<ip-with-dashes>.sslip.io
+<EC2_PUBLIC_IP> broker-3.<ip-with-dashes>.sslip.io
+<EC2_PUBLIC_IP> broker-4.<ip-with-dashes>.sslip.io
+<EC2_PUBLIC_IP> broker-5.<ip-with-dashes>.sslip.io
+<EC2_PUBLIC_IP> kafka.<ip-with-dashes>.sslip.io
 ```
 
 > **Note:** sslip.io automatically resolves `*.<ip-with-dashes>.sslip.io` to the dotted IP, but adding `/etc/hosts` entries ensures reliable resolution from your workstation.
@@ -478,7 +478,7 @@ kubectl get secret admin -n my-eventstreams \
 Open in your browser:
 
 ```
-https://adminui.18-220-31-188.sslip.io/
+https://adminui.<ip-with-dashes>.sslip.io/
 ```
 
 Log in with:
@@ -540,15 +540,15 @@ kubectl es init -n my-eventstreams \
   --auth-type scram-sha-512 \
   --username admin \
   --password <ADMIN_PASSWORD> \
-  --schema-reg-url https://apicurio.18-220-31-188.sslip.io
+  --schema-reg-url https://apicurio.<ip-with-dashes>.sslip.io
 
 Namespace:                         my-eventstreams
 Name:                              minimal-prod
-Event Streams API endpoint:        https://adminapi.18-220-31-188.sslip.io
+Event Streams API endpoint:        https://adminapi.<ip-with-dashes>.sslip.io
 Event Streams API status:          OK
-Event Streams UI address:          https://adminui.18-220-31-188.sslip.io
-Apicurio Registry endpoint:        https://apicurio.18-220-31-188.sslip.io
-Event Streams bootstrap address:   kafka.18-220-31-188.sslip.io:443
+Event Streams UI address:          https://adminui.<ip-with-dashes>.sslip.io
+Apicurio Registry endpoint:        https://apicurio.<ip-with-dashes>.sslip.io
+Event Streams bootstrap address:   kafka.<ip-with-dashes>.sslip.io:443
 OK
 ```
 
