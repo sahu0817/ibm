@@ -636,7 +636,7 @@ ls -ltr
 -rw-r--r-- 1 ubuntu ubuntu     2387 Jun 18 01:49 starter-app_properties.zip
 -rw-rw-r-- 1 ubuntu ubuntu 38510290 Jun 18 01:49 demo-all.jar
 ```
-> **Note:** The kafka.properties & truststore.p12 is dynamically created by the UI Starter Application. The attached kafka.properties & truststore.p12 is for reference only.
+> **Note:** The kafka.properties & truststore.p12 is dynamically created by the UI Starter Application. The kafka.properties & truststore.p12 in this repo is for reference only.
 
 Run the application:
 
