@@ -18,7 +18,7 @@ spec:
     endpoints:
       - name: ingress
         type: ingress
-        host: adminapi.18-220-31-188.sslip.io
+        host: adminapi.changeme_ip-with-dashes.sslip.io
         class: nginx
         containerPort: 8001
   adminUI:
@@ -27,21 +27,21 @@ spec:
     endpoints:
       - name: ingress
         type: ingress
-        host: adminui.18-220-31-188.sslip.io
+        host: adminui.changeme_ip-with-dashes.sslip.io
         class: nginx
         containerPort: 3000
   apicurioRegistry:
     endpoints:
       - name: ingress
         type: ingress
-        host: apicurio.18-220-31-188.sslip.io
+        host: apicurio.changeme_ip-with-dashes.sslip.io
         class: nginx
         containerPort: 8002
   restProducer:
     endpoints:
       - name: ingress
         type: ingress
-        host: rest.18-220-31-188.sslip.io
+        host: rest.changeme_ip-with-dashes.sslip.io
         class: nginx
         containerPort: 8003
   strimziOverrides:
@@ -66,8 +66,8 @@ spec:
             type: scram-sha-512
           configuration:
             bootstrap:
-              host: kafka.18-220-31-188.sslip.io
-            hostTemplate: broker-{nodeId}.18-220-31-188.sslip.io
+              host: kafka.changeme_ip-with-dashes.sslip.io
+            hostTemplate: broker-{nodeId}.changeme_ip-with-dashes.sslip.io
             class: nginx
         - name: tls
           port: 9093
