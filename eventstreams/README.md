@@ -22,7 +22,8 @@ This guide documents deploying a demo IBM Event Streams instance on a **kind** c
 - [11. Access the Admin UI](#11-access-the-admin-ui)
 - [12. Install the Event Streams CLI](#12-install-the-event-streams-cli)
 - [13. Manage Kafka Topics](#13-manage-kafka-topics)
-- [14. Run the Starter Application](#14-run-the-starter-application)
+- [14. Manage Kafka Schemas](#14-manage-kafka-schemas)
+- [15. Run the Starter Application](#14-run-the-starter-application)
 - [Troubleshooting Notes](#troubleshooting-notes)
 
 ---
@@ -598,8 +599,50 @@ OK
 > | `kubectl apply -f kafkatopic.yaml` | `kubectl delete kafkatopic <name> -n my-eventstreams` |
 
 ---
+## 14. Manage Kafka Schemas
 
-## 14. Run the Starter Application
+### Register a Schema via CLI
+
+PreReq: The user needs to have these ACLs to register schema
+```bash
+- operation: Read
+  resource:
+    type: topic
+    name: __schema_
+    patternType: prefix
+- operation: Alter
+  resource:
+    type: topic
+    name: __schema_
+    patternType: prefix
+
+```
+You can either do a quick inline edit
+```bash
+kubectl edit kafkauser admin -n my-eventstreams
+```
+OR the safest way
+```bash
+kubectl get kafkauser admin -n my-eventstreams -o yaml > admin-user.yaml
+<edit the file to add ACLs>
+kubectl apply -f admin-user.yaml
+```
+
+```bash
+kubectl es schema-add --name book-value --version v1 --file test.avsc
+
+The latest version of schema book-value is enabled.
+
+Version   Version ID   Schema       State     Updated                Comment
+v1        1            book-value   enabled   2026-06-18T21:17:07Z
+
+Added version v1 of schema book-value to the registry.
+OK
+```
+
+---
+
+## 15. Run the Starter Application
 
 Download the demo JAR and configure it from the Admin UI. 
 
