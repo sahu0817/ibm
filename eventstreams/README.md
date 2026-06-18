@@ -406,15 +406,15 @@ eventstreams.eventstreams.ibm.com/minimal-prod   Ready
 ```bash
 kubectl get ingress -n my-eventstreams
 
-NAME                                 CLASS   HOSTS                             ADDRESS         PORTS     AGE
-minimal-prod-ibm-es-ac-reg-ingress   nginx   apicurio.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   4m36s
-minimal-prod-ibm-es-admapi-ingress   nginx   adminapi.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   4m35s
-minimal-prod-ibm-es-recapi-ingress   nginx   rest.<ip-with-dashes>.sslip.io       99.999.99.999   80, 443   4m35s
-minimal-prod-ibm-es-ui-ingress       nginx   adminui.<ip-with-dashes>.sslip.io    99.999.99.999   80, 443   4m34s
-minimal-prod-kafka-3                 nginx   broker-3.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   7m58s
-minimal-prod-kafka-4                 nginx   broker-4.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   7m58s
-minimal-prod-kafka-5                 nginx   broker-5.<ip-with-dashes>.sslip.io   99.999.99.999   80, 443   7m58s
-minimal-prod-kafka-bootstrap         nginx   kafka.<ip-with-dashes>.sslip.io      99.999.99.999   80, 443   7m58s
+NAME                                 CLASS   HOSTS                                ADDRESS           PORTS     AGE
+minimal-prod-ibm-es-ac-reg-ingress   nginx   apicurio.<ip-with-dashes>.sslip.io   <EC2.PUBLIC.ip>   80, 443   4m36s
+minimal-prod-ibm-es-admapi-ingress   nginx   adminapi.<ip-with-dashes>.sslip.io   <EC2.PUBLIC.ip>   80, 443   4m35s
+minimal-prod-ibm-es-recapi-ingress   nginx   rest.<ip-with-dashes>.sslip.io       <EC2.PUBLIC.ip>   80, 443   4m35s
+minimal-prod-ibm-es-ui-ingress       nginx   adminui.<ip-with-dashes>.sslip.io    <EC2.PUBLIC.ip>   80, 443   4m34s
+minimal-prod-kafka-3                 nginx   broker-3.<ip-with-dashes>.sslip.io   <EC2.PUBLIC.ip>   80, 443   7m58s
+minimal-prod-kafka-4                 nginx   broker-4.<ip-with-dashes>.sslip.io   <EC2.PUBLIC.ip>   80, 443   7m58s
+minimal-prod-kafka-5                 nginx   broker-5.<ip-with-dashes>.sslip.io   <EC2.PUBLIC.ip>   80, 443   7m58s
+minimal-prod-kafka-bootstrap         nginx   kafka.<ip-with-dashes>.sslip.io      <EC2.PUBLIC.ip>   80, 443   7m58s
 ```
 
 ---
