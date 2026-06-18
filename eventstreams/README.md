@@ -301,9 +301,11 @@ Edit `minimal-prod.yaml` before applying:
 
 1. Set `spec.license.accept` to `true`.
 2. Replace `<HOSTNAME>` placeholders with sslip.io hostnames based on your EC2 public IP.
-   - Example: for IP `99.999.99.999`, use `adminui.<99-999-99-999>.sslip.io`.
+   - Example: for IP `99.999.99.999`, use `adminui.99-999-99-999.sslip.io`.
 3. Set `class: nginx` for all ingress endpoints.
 4. Set `class: standard` for storage.
+
+> **Note:** sslip.io automatically resolves `*.<ip-with-dashes>.sslip.io` to the dotted IP. If you chose to go with a custom hostname you need to provision DNS records
 
 Example diff (original vs. configured):
 
