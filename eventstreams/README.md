@@ -318,12 +318,12 @@ sdiff -s minimal-prod.yaml.orig minimal-prod.yaml
         host: <HOSTNAME>                             |          host: adminapi.18-220-31-188.sslip.io
         class: <INGRESS-CLASS>                       |          class: nginx
         host: <HOSTNAME>                             |          host: adminui.18-220-31-188.sslip.io
-        class: <INGRESS-CLASS>				               |      	  class: nginx
-        host: <HOSTNAME>				                     |	        host: apicurio.18-220-31-188.sslip.io
-        class: <INGRESS-CLASS>				               |      	  class: nginx
-        host: <HOSTNAME>				                     |	        host: rest.18-220-31-188.sslip.io
-        class: <INGRESS-CLASS>				               |      	  class: nginx
-              host: <HOSTNAME>				               |      	        host: kafka.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>                       |          class: nginx
+        host: <HOSTNAME>                             |          host: apicurio.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>                       |          class: nginx
+        host: <HOSTNAME>                             |          host: rest.18-220-31-188.sslip.io
+        class: <INGRESS-CLASS>				               |          class: nginx
+              host: <HOSTNAME>                       |                host: kafka.18-220-31-188.sslip.io
             hostTemplate: broker-{nodeId}.<HOSTNAME> |              hostTemplate: broker-{nodeId}.18-220-31-188.sslip.io
             class: <INGRESS-CLASS>                   |              class: nginx
           class: ''                                  |            class: standard
@@ -486,6 +486,8 @@ Log in with:
 - **Username:** `admin`
 - **Password:** value retrieved from the secret above
 
+![Event Streams Admin UI](images/eventstreams_ui.png)
+
 ---
 
 ## 12. Install the Event Streams CLI
@@ -498,6 +500,8 @@ The CLI supports:
 - Displaying cluster configuration and credentials
 
 **Download:** In the Admin UI, go to **Toolbox → Command-line Interface** and download `kubectl-es-plugin.bin`.
+
+![Event Streams CLI download](images/eventstreams_cli_download.png)
 
 Install on the EC2 host:
 
@@ -643,13 +647,16 @@ java -Dproperties_path=./kafka.properties -jar demo-all.jar
 2026-06-18 01:59:13,764 INFO [vert.x-eventloop-thread-1] kafka.vertx.demo.PeriodicProducer - Stopped producing Kafka records
 ```
 
-Access the Starter App UI
+Access the Starter App UI to produce & consume events
 
 Open in your browser:
 
 ```
 http://<EC2_PUBLIC_IP>:8080/
 ```
+
+![Starter application UI](images/starterapp_ui.png)
+
 ---
 
 ## Additional Resources
