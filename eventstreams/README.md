@@ -23,8 +23,8 @@ This guide documents deploying a demo IBM Event Streams instance on a **kind** c
 - [12. Install the Event Streams CLI](#12-install-the-event-streams-cli)
 - [13. Manage Kafka Topics](#13-manage-kafka-topics)
 - [14. Manage Kafka Schemas](#14-manage-kafka-schemas)
-- [15. Run the Starter Application](#14-run-the-starter-application)
-- [16. Produce with Schema using REST API](#14-produce-with-schema-using-rest-api)
+- [15. Run the Starter Application](#15-run-the-starter-application)
+- [16. Produce with Schema using REST API](#16-produce-with-schema-using-rest-api)
 - [Troubleshooting Notes](#troubleshooting-notes)
 
 ---
@@ -709,33 +709,45 @@ http://<EC2_PUBLIC_IP>:8080/
 ---
 ## 16. Produce with Schema using REST API
 
-### Create Scram Credentials
+#### Create Scram Credentials
 On the eventstreams UI: Go to **Home → Connect to this Cluster → Producer endpoint and credentials → Generate Credentials → SCRAM username and password**
+
 user : restapi
 password: blablablabla
 Basic AuthToken: Basic abcdefghijklmnopqrestuvwxyz==
 
-### Download the server certificate for EventStreams
-[ubuntu@awst2x ~/ibm/event-automation]# kubectl es certificates --format pem
+#### Download the server certificate for EventStreams
+```bash
+kubectl es certificates --format pem
+
 Certificate successfully written to /home/ubuntu/ibm/event-automation/es-cert.pem.
 OK
+```
 
-### Create a Ropic
-[ubuntu@awst2x ~/ibm/event-automation]# kubectl es topic-create --name restapi-topic --partitions 1 --replication-factor 1 --config retention.ms=86400000
+#### Create a Ropic
+```bash
+kubectl es topic-create --name restapi-topic --partitions 1 --replication-factor 1 --config retention.ms=86400000
+
 Created topic restapi-topic
 OK
+```
 
-### Create a Schema
-[ubuntu@awst2x ~/ibm/event-automation]# kubectl es schema-add --name restapi-schema --version v1 --file restapi.avsc
+#### Create a Schema
+```bash
+kubectl es schema-add --name restapi-schema --version v1 --file restapi.avsc
+
 The latest version of schema restapi-schema is enabled.
 Version   Version ID   Schema           State     Updated                Comment
 v1        1            restapi-schema   enabled   2026-06-19T03:49:08Z
 
 Added version v1 of schema restapi-schema to the registry.
 OK
+```
 
-### Produce with Schema
+#### Produce with Schema
+```bash
 curl -H "Authorization: Basic abcdefghijklmnopqrestuvwxyz==" -H "Accept: application/json" -H "Content-Type: text/plain" -d '{"name": "John", "number" : 2}' --cacert es-cert.pem "https://rest.18-220-31-188.sslip.io/topics/restapi-topic/records?schemaname=restapi-schema&schemaversion=v1"
+
 {
   "metadata" : {
     "topic" : "restapi-topic",
@@ -747,6 +759,7 @@ curl -H "Authorization: Basic abcdefghijklmnopqrestuvwxyz==" -H "Accept: applica
   "partition" : 0,
   "offset" : 1,
   "timestamp" : 1781841235780
+```
 ---
 
 ## Additional Resources
