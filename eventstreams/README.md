@@ -712,7 +712,9 @@ http://<EC2_PUBLIC_IP>:8080/
 On the eventstreams UI: Go to **Home → Connect to this Cluster → Producer endpoint and credentials → Generate Credentials → SCRAM username and password**
 
 user : restapi
+
 password: blablablabla
+
 Basic AuthToken: Basic abcdefghijklmnopqrstuvwxyz==
 
 #### Download the server certificate for EventStreams
