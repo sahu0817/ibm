@@ -25,7 +25,6 @@ This guide documents deploying a demo IBM Event Streams instance on a **kind** c
 - [14. Manage Kafka Schemas](#14-manage-kafka-schemas)
 - [15. Run the Starter Application](#15-run-the-starter-application)
 - [16. Produce with Schema using REST API](#16-produce-with-schema-using-rest-api)
-- [Troubleshooting Notes](#troubleshooting-notes)
 
 ---
 
@@ -630,14 +629,14 @@ kubectl apply -f admin-user.yaml
 ```
 
 ```bash
-kubectl es schema-add --name book-value --version v1 --file test.avsc
+kubectl es schema-add --name test-value --version v1 --file test.avsc
 
-The latest version of schema book-value is enabled.
+The latest version of schema test-value is enabled.
 
 Version   Version ID   Schema       State     Updated                Comment
-v1        1            book-value   enabled   2026-06-18T21:17:07Z
+v1        1            test-value   enabled   2026-06-18T21:17:07Z
 
-Added version v1 of schema book-value to the registry.
+Added version v1 of schema test-value to the registry.
 OK
 ```
 
@@ -714,7 +713,7 @@ On the eventstreams UI: Go to **Home → Connect to this Cluster → Producer en
 
 user : restapi
 password: blablablabla
-Basic AuthToken: Basic abcdefghijklmnopqrestuvwxyz==
+Basic AuthToken: Basic abcdefghijklmnopqrstuvwxyz==
 
 #### Download the server certificate for EventStreams
 ```bash
@@ -746,7 +745,7 @@ OK
 
 #### Produce with Schema
 ```bash
-curl -H "Authorization: Basic abcdefghijklmnopqrestuvwxyz==" -H "Accept: application/json" -H "Content-Type: text/plain" -d '{"name": "John", "number" : 2}' --cacert es-cert.pem "https://rest.18-220-31-188.sslip.io/topics/restapi-topic/records?schemaname=restapi-schema&schemaversion=v1"
+curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: application/json" -H "Content-Type: text/plain" -d '{"name": "John", "number" : 2}' --cacert es-cert.pem "https://rest.18-220-31-188.sslip.io/topics/restapi-topic/records?schemaname=restapi-schema&schemaversion=v1"
 
 {
   "metadata" : {

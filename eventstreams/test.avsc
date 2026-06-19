@@ -1,0 +1,23 @@
+{
+    "name": "basic",
+    "type": "record",
+    "doc": "basic schema for tests",
+    "namespace": "org.example",
+    "fields": [
+        {
+            "name": "number",
+            "doc": "age",
+            "type": [
+                "long",
+                "null"
+            ]
+        },
+        {
+            "name": "name",
+            "doc": "a name",
+            "type": [
+                "string"
+            ]
+        }
+    ]
+}
