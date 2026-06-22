@@ -772,7 +772,7 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
 
 | Requirement | Notes |
 |---|---|
-| **kcp** | Download the latest from [here](https://github.com/confluentinc/kcp/releases|)
+| **kcp** | Download the latest from [here](https://github.com/confluentinc/kcp/releases)
 
 ```bash
 wget https://github.com/confluentinc/kcp/releases/download/v0.8.5/kcp_linux_amd64.tar.gz
