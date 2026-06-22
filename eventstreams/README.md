@@ -31,7 +31,7 @@ This guide documents
 
 ### kcp 
 - [Prerequisites](#kcp-prerequisites)
-- [1. Scan the cluster](#1-scan-the-cluster)
+- [1. Scan the eventstreams cluster](#1-scan-the-eventstreams-cluster)
 ---
 
 ## Prerequisites
@@ -768,7 +768,7 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
   "timestamp" : 1781841235780
 ```
 ---
-## kcp Prerequisites
+## KCP Prerequisites
 
 | Requirement | Notes |
 |---|---|
@@ -781,7 +781,7 @@ sudo cp kcp/kcp /usr/local/bin
 ```
 ---
 
-## 1. Scan the kind Cluster
+## 1. Scan the eventstreams cluster 
 ```bash
 kcp scan clusters --source-type apache-kafka --credentials-file apache-kafka-credentials.yaml
 
