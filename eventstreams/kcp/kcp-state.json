@@ -7,16 +7,16 @@
       {
         "id": "minimal-prod",
         "bootstrap_servers": [
-          "broker-4.18-220-31-188.sslip.io:443",
-          "broker-5.18-220-31-188.sslip.io:443",
-          "broker-3.18-220-31-188.sslip.io:443"
+          "broker-4.<ip-wish-dashes>.sslip.io:443",
+          "broker-5.<ip-wish-dashes>.sslip.io:443",
+          "broker-3.<ip-wish-dashes>.sslip.io:443"
         ],
         "kafka_admin_client_information": {
           "cluster_id": "SFvtR-zyRXCARBLqLcu3Qg",
           "discovered_brokers": [
-            "broker-4.18-220-31-188.sslip.io:443",
-            "broker-5.18-220-31-188.sslip.io:443",
-            "broker-3.18-220-31-188.sslip.io:443"
+            "broker-4.<ip-wish-dashes>.sslip.io:443",
+            "broker-5.<ip-wish-dashes>.sslip.io:443",
+            "broker-3.<ip-wish-dashes>.sslip.io:443"
           ],
           "sasl_mechanism": "SCRAM-SHA-512",
           "topics": {
