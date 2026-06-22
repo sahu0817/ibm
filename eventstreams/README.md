@@ -1,12 +1,15 @@
 # IBM EventStreams — Demo Deployment on Kubernetes (kind on EC2)
 
-This guide documents deploying a demo IBM Event Streams instance on a **kind** cluster running on an AWS EC2 instance. It follows the official installation guide:
+This guide documents 
+1. Deploy a demo IBM Event Streams instance on a **kind** cluster running on an AWS EC2 instance. It follows the official installation guide:
 
 **Reference:** [Installing Event Streams on Kubernetes](https://ibm.github.io/event-automation/es/installing/installing-on-kubernetes/)
 
+2. Use kcp tool to migrate to Confluent Platform
 ---
 
 ## Table of Contents
+### Deployment
 
 - [Prerequisites](#prerequisites)
 - [1. Create the kind Cluster](#1-create-the-kind-cluster)
@@ -26,6 +29,9 @@ This guide documents deploying a demo IBM Event Streams instance on a **kind** c
 - [15. Run the Starter Application](#15-run-the-starter-application)
 - [16. Produce with Schema using REST API](#16-produce-with-schema-using-rest-api)
 
+### kcp 
+- [Prerequisites](#kcp-prerequisites)
+- [1. Scan the cluster](#1-scan-the-cluster)
 ---
 
 ## Prerequisites
@@ -762,9 +768,35 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
   "timestamp" : 1781841235780
 ```
 ---
+## kcp Prerequisites
+
+| Requirement | Notes |
+|---|---|
+| **kcp** | Download the latest from [here](https://github.com/confluentinc/kcp/releases|)
+
+```bash
+wget https://github.com/confluentinc/kcp/releases/download/v0.8.5/kcp_linux_amd64.tar.gz
+tar -xzf kcp_linux_amd64.tar.gz
+sudo cp kcp/kcp /usr/local/bin
+```
+---
+
+## 1. Scan the kind Cluster
+```bash
+kcp scan clusters --source-type apache-kafka --credentials-file apache-kafka-credentials.yaml
+
+ℹ️  Apache Kafka credentials file format & metrics options: https://confluentinc.github.io/kcp/0.8.5/apache-kafka-configuration/
+2026/06/22 16:19:28 WARN TLS certificate verification is disabled - this should only be used in test environments with self-signed certificates
+
+✅ Scan completed successfully
+   Scanned 1 cluster(s)
+   State file: kcp-state.json
+```
+---
 
 ## Additional Resources
 
 - [Event Streams Documentation](https://ibm.github.io/event-automation/es/)
 - [CR Examples (GitHub)](https://github.com/IBM/ibm-event-automation/tree/main/event-streams/cr-examples/eventstreams/kubernetes)
 - [IBM Container Library (Entitlement Key)](https://myibm.ibm.com/products-services/containerlibrary)
+- [KCP Migration Tool](https://github.com/confluentinc/kcp/tree/main)

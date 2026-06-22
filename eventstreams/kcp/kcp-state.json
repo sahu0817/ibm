@@ -1,0 +1,693 @@
+{
+  "msk_sources": {
+    "regions": []
+  },
+  "osk_sources": {
+    "clusters": [
+      {
+        "id": "minimal-prod",
+        "bootstrap_servers": [
+          "broker-4.18-220-31-188.sslip.io:443",
+          "broker-5.18-220-31-188.sslip.io:443",
+          "broker-3.18-220-31-188.sslip.io:443"
+        ],
+        "kafka_admin_client_information": {
+          "cluster_id": "SFvtR-zyRXCARBLqLcu3Qg",
+          "discovered_brokers": [
+            "broker-4.18-220-31-188.sslip.io:443",
+            "broker-5.18-220-31-188.sslip.io:443",
+            "broker-3.18-220-31-188.sslip.io:443"
+          ],
+          "sasl_mechanism": "SCRAM-SHA-512",
+          "topics": {
+            "summary": {
+              "topics": 6,
+              "internal_topics": 1,
+              "total_partitions": 6,
+              "total_internal_partitions": 50,
+              "compact_topics": 0,
+              "compact_internal_topics": 0,
+              "compact_partitions": 0,
+              "compact_internal_partitions": 0,
+              "remote_storage_topics": 0
+            },
+            "details": [
+              {
+                "name": "some_topic",
+                "partitions": 1,
+                "replication_factor": 1,
+                "configurations": {}
+              },
+              {
+                "name": "starter_topic",
+                "partitions": 1,
+                "replication_factor": 1,
+                "configurations": {}
+              },
+              {
+                "name": "restapi-topic",
+                "partitions": 1,
+                "replication_factor": 1,
+                "configurations": {}
+              },
+              {
+                "name": "eventstreams-apicurio-registry-events-topic",
+                "partitions": 1,
+                "replication_factor": 3,
+                "configurations": {}
+              },
+              {
+                "name": "__consumer_offsets",
+                "partitions": 50,
+                "replication_factor": 3,
+                "configurations": {}
+              },
+              {
+                "name": "eventstreams-apicurio-registry-snapshot-topic",
+                "partitions": 1,
+                "replication_factor": 3,
+                "configurations": {}
+              },
+              {
+                "name": "eventstreams-apicurio-registry-journal-topic",
+                "partitions": 1,
+                "replication_factor": 3,
+                "configurations": {}
+              }
+            ]
+          },
+          "acls": [
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-journal-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Create",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-journal-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-journal-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "DescribeConfigs",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-journal-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__consumer_offsets",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__consumer_offsets",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Describe",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Group",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:admin",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Group",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:restapi",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Group",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-source-user",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Group",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-source-user",
+              "Host": "*",
+              "Operation": "Describe",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Group",
+              "ResourceName": "minimal-prod-georep-cluster",
+              "ResourcePatternType": "Prefixed",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Group",
+              "ResourceName": "minimal-prod-georep-cluster",
+              "ResourcePatternType": "Prefixed",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Describe",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_offsets",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_offsets",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Describe",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_offsets",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_offsets",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "DescribeConfigs",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "TransactionalID",
+              "ResourceName": "eventstreams-apicurio-registry-v3-",
+              "ResourcePatternType": "Prefixed",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Group",
+              "ResourceName": "eventstreams-apicurio-registry-v3-",
+              "ResourcePatternType": "Prefixed",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-snapshot-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Create",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-snapshot-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-snapshot-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "DescribeConfigs",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-snapshot-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_status",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_status",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Describe",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_status",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_status",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "DescribeConfigs",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "starter_topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:starter-app",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "starter_topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:starter-app",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Cluster",
+              "ResourceName": "kafka-cluster",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-source-user",
+              "Host": "*",
+              "Operation": "Create",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Cluster",
+              "ResourceName": "kafka-cluster",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-kafka-user",
+              "Host": "*",
+              "Operation": "Describe",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Cluster",
+              "ResourceName": "kafka-cluster",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "IdempotentWrite",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Cluster",
+              "ResourceName": "kafka-cluster",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Create",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Cluster",
+              "ResourceName": "kafka-cluster",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:admin",
+              "Host": "*",
+              "Operation": "Alter",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Cluster",
+              "ResourceName": "kafka-cluster",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-source-user",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Cluster",
+              "ResourceName": "kafka-cluster",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "DescribeConfigs",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Cluster",
+              "ResourceName": "kafka-cluster",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Alter",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Cluster",
+              "ResourceName": "kafka-cluster",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-source-user",
+              "Host": "*",
+              "Operation": "Describe",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-events-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Create",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-events-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-events-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "DescribeConfigs",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "eventstreams-apicurio-registry-events-topic",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-ac-reg",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "mm2-offset-syncs.",
+              "ResourcePatternType": "Prefixed",
+              "Principal": "User:minimal-prod-ibm-es-georep-source-user",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "TransactionalID",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:restapi",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:admin",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:restapi",
+              "Host": "*",
+              "Operation": "Create",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:restapi",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:CN=minimal-prod-ibm-es-kafka-user",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:restapi",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:admin",
+              "Host": "*",
+              "Operation": "Create",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "AlterConfigs",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:admin",
+              "Host": "*",
+              "Operation": "Delete",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-source-user",
+              "Host": "*",
+              "Operation": "DescribeConfigs",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:admin",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-source-user",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Alter",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "*",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-source-user",
+              "Host": "*",
+              "Operation": "Describe",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Group",
+              "ResourceName": "starter-app-starter-consumer",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:starter-app",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_configs",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_configs",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Describe",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_configs",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "Write",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__eventstreams_georeplicator_configs",
+              "ResourcePatternType": "Literal",
+              "Principal": "User:minimal-prod-ibm-es-georep-ext-user",
+              "Host": "*",
+              "Operation": "DescribeConfigs",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__schema_",
+              "ResourcePatternType": "Prefixed",
+              "Principal": "User:restapi",
+              "Host": "*",
+              "Operation": "Alter",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__schema_",
+              "ResourcePatternType": "Prefixed",
+              "Principal": "User:admin",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__schema_",
+              "ResourcePatternType": "Prefixed",
+              "Principal": "User:restapi",
+              "Host": "*",
+              "Operation": "Read",
+              "PermissionType": "Allow"
+            },
+            {
+              "ResourceType": "Topic",
+              "ResourceName": "__schema_",
+              "ResourcePatternType": "Prefixed",
+              "Principal": "User:admin",
+              "Host": "*",
+              "Operation": "Alter",
+              "PermissionType": "Allow"
+            }
+          ],
+          "self_managed_connectors": null
+        },
+        "discovered_clients": null,
+        "metadata": {
+          "environment": "poc",
+          "location": "es-scan",
+          "last_scanned": "2026-06-22T16:19:28.673775164Z"
+        }
+      }
+    ]
+  },
+  "schema_registries": {},
+  "kcp_build_info": {
+    "version": "0.8.5",
+    "commit": "0c390418fe9fbaa1614b6d73724be957fe7ecd11",
+    "date": "2026-06-17T17:39:54Z"
+  },
+  "timestamp": "2026-06-22T16:19:28.554514444Z"
+}
