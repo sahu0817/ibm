@@ -32,6 +32,7 @@ This guide documents
 ### kcp 
 - [Prerequisites](#kcp-prerequisites)
 - [1. Scan the eventstreams cluster](#1-scan-the-eventstreams-cluster)
+- [2. Scan the schemaregistry (apicurio)](#2-scan-the-shcemaregistry-apicurio)
 ---
 
 ## Prerequisites
@@ -312,7 +313,7 @@ Edit `minimal-prod.yaml` before applying:
 3. Set `class: nginx` for all ingress endpoints.
 4. Set `class: standard` for storage.
 
-> **Note:** FQDNs ending with sslip.io are magic DNS records that resolve directly to the IP address embedded inside the domain name itself. For example, 192.168.1.100.sslip.io automatically resolves to 192.168.1.100. If you choose to go with a custom hostname you need to provision DNS records
+> **Note:** FQDNs ending with sslip.io are magic DNS records that resolve directly to the IP address embedded inside the domain name itself. For example, 192-168-1-100.sslip.io automatically resolves to 192.168.1.100. If you choose to go with a custom hostname you need to provision DNS records
 
 Example diff (original vs. configured):
 
@@ -331,7 +332,7 @@ sdiff -s minimal-prod.yaml.orig minimal-prod.yaml
         host: <HOSTNAME>                             |          host: apicurio.<ip-with-dashes>.sslip.io
         class: <INGRESS-CLASS>                       |          class: nginx
         host: <HOSTNAME>                             |          host: rest.<ip-with-dashes>.sslip.io
-        class: <INGRESS-CLASS>				               |          class: nginx
+        class: <INGRESS-CLASS>                       |          class: nginx
               host: <HOSTNAME>                       |                host: kafka.<ip-with-dashes>.sslip.io
             hostTemplate: broker-{nodeId}.<HOSTNAME> |              hostTemplate: broker-{nodeId}.<ip-with-dashes>.sslip.io
             class: <INGRESS-CLASS>                   |              class: nginx
@@ -768,6 +769,8 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
   "timestamp" : 1781841235780
 ```
 ---
+# Migrate to Confluent with kcp
+
 ## KCP Prerequisites
 
 | Requirement | Notes |
@@ -792,6 +795,10 @@ kcp scan clusters --source-type apache-kafka --credentials-file apache-kafka-cre
    Scanned 1 cluster(s)
    State file: kcp-state.json
 ```
+---
+## 2. Scan the schemaregistry (apicurio)
+
+TBD
 ---
 
 ## Additional Resources
