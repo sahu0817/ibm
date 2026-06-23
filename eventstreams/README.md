@@ -31,8 +31,8 @@ This guide documents
 
 ### kcp 
 - [Prerequisites](#kcp-prerequisites)
-- [1. Scan eventstreams cluster](#1-scan-the-eventstreams-cluster)
-- [2. Scan schemaregistry (apicurio)](#2-scan-the-schemaregistry-apicurio)
+- [1. Scan eventstreams cluster](#1-scan-eventstreams-cluster)
+- [2. Scan schemaregistry (apicurio)](#2-scan-schemaregistry-apicurio)
 ---
 
 ## Prerequisites
@@ -796,7 +796,7 @@ kcp scan clusters --source-type apache-kafka --credentials-file apache-kafka-cre
    State file: kcp-state.json
 ```
 ---
-## 2. Scan chemaregistry (apicurio)
+## 2. Scan schemaregistry (apicurio)
 
 TBD
 ---
