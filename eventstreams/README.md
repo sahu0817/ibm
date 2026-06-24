@@ -1,10 +1,7 @@
 # IBM EventStreams — Deployment and migration to Confluent Platform.
 
-This guide documents 
-1. Deploy a demo IBM EventStreams instance on a **kind K8s** cluster running on an **AWS EC2** instance. It follows the official installation guide:
-
-**Reference:** [Installing Event Streams on Kubernetes](https://ibm.github.io/event-automation/es/installing/installing-on-kubernetes/)
-
+A guide to  
+1. Deploy a demo IBM EventStreams instance on a **kind K8s** cluster running on an **AWS EC2** instance. It follows the official installation guide: ** [Installing Event Streams on Kubernetes](https://ibm.github.io/event-automation/es/installing/installing-on-kubernetes/)
 2. Use kcp tool to discover topics, schema registry etc 
 3. Use a opensource tool to migrate schemas to confluent schema registry  
 4. Setup ClusterLink to migrate topics,offsets,ACLs from EventStreams to Confluent Cloud
@@ -959,36 +956,6 @@ confluent kafka  mirror list --link es-cc-link
   es-cc-link | starter_topic                                 | starter_topic                                 | ACTIVE        |    1782270128646 |             1 |                            0
 ```
 
-
-
-## KCP Prerequisites
-
-| Requirement | Notes |
-|---|---|
-| **kcp** | Download the latest from [here](https://github.com/confluentinc/kcp/releases)
-
-```bash
-wget https://github.com/confluentinc/kcp/releases/download/v0.8.5/kcp_linux_amd64.tar.gz
-tar -xzf kcp_linux_amd64.tar.gz
-sudo cp kcp/kcp /usr/local/bin
-```
----
-
-## 1. Scan eventstreams cluster 
-```bash
-kcp scan clusters --source-type apache-kafka --credentials-file apache-kafka-credentials.yaml
-
-ℹ️  Apache Kafka credentials file format & metrics options: https://confluentinc.github.io/kcp/0.8.5/apache-kafka-configuration/
-2026/06/22 16:19:28 WARN TLS certificate verification is disabled - this should only be used in test environments with self-signed certificates
-
-✅ Scan completed successfully
-   Scanned 1 cluster(s)
-   State file: kcp-state.json
-```
----
-## 2. Scan schemaregistry (apicurio)
-
-TBD
 ---
 
 ## Additional Resources
