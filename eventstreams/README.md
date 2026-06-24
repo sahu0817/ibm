@@ -784,7 +784,7 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
 # Migrate to Confluent with kcp
 ## Schema Migration
 
-### 1. Trust the eventstreams apicurio endpoint cert 
+### 1. Trust eventstreams apicurio endpoint cert 
 This step is needed for any client that needs to interact with secured apicurio endpoint
 
 Extract the cert chain from the endpoint
