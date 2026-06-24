@@ -781,9 +781,9 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
 ## 1. Create a Kafka User 
 
 Make sure the following ACLs are configured for this user for mirroring, offset-sync, ACL sync
-Topics - Read, Describe, DescribeConfigs
-Groups - Read, Describe
-Cluster - Describe (If ACL sync is supported)
+- Topics  : Read, Describe, DescribeConfigs
+- Groups  : Read, Describe
+- Cluster : Describe (If ACL sync is supported)
 
 ```bash
 kubectl apply -f cluser.yaml -n my-eventstreams
@@ -802,7 +802,7 @@ Prepare the clusterlink config file cluser.config
 
 Extract the cert chain from the endpoint
 ```bash
-openssl s_client    -connect kafka.18-220-31-188.sslip.io:443    -servername kafka.18-220-31-188.sslip.io    -showcerts </dev/null 2>/dev/null > kafka-sclient.txt
+openssl s_client    -connect kafka.<ip-with-dashes>.sslip.io:443    -servername kafka.<ip-with-dashes>.sslip.io    -showcerts </dev/null 2>/dev/null > kafka-sclient.txt
 ```
 Extract the PEM block
 ```bash
@@ -812,7 +812,7 @@ Extract the cert chain
 ```bash
 awk 'BEGIN{c=0} /BEGIN CERTIFICATE/{c++} {print > ("cert" c ".pem")}' kafka-chain.pem
 ```
-> **Note:** This chain involves root (cert1.pem) and server (cert2.pem). You need to join these with new lines (\n) as the value for the key ssl.truststore.certificates 
+> **Note:** This chain involves two certs: root (cert2.pem) and server (cert1.pem). You need to join these with new lines (\n) as the value for the key ssl.truststore.certificates. Refer cluser.config 
 
 Create the clusterlink in Confluent CLoud
 ```bash
@@ -840,6 +840,28 @@ confluent kafka link describe es-cc-link
 
 ## 3. Add topics to mirror 
 ```bash
+confluent kafka  mirror  create some_topic --link es-cc-link
+Created mirror topic "some_topic".
+
+confluent kafka  mirror  create starter_topic --link es-cc-link
+Created mirror topic "starter_topic".
+
+confluent kafka  mirror  create restapi-topic --link es-cc-link
+Created mirror topic "restapi-topic".
+
+```
+
+List mirror topics
+```bash
+confluent kafka  mirror list --link es-cc-link
+  Link Name  |               Mirror Topic Name               |               Source Topic Name               | Mirror Status | Status Time (ms) | Num Partition | Max Per Partition Mirror Lag
+-------------+-----------------------------------------------+-----------------------------------------------+---------------+------------------+---------------+-------------------------------
+  es-cc-link | eventstreams-apicurio-registry-events-topic   | eventstreams-apicurio-registry-events-topic   | ACTIVE        |    1782270225937 |             1 |                            0
+  es-cc-link | eventstreams-apicurio-registry-journal-topic  | eventstreams-apicurio-registry-journal-topic  | ACTIVE        |    1782270225938 |             1 |                            0
+  es-cc-link | eventstreams-apicurio-registry-snapshot-topic | eventstreams-apicurio-registry-snapshot-topic | ACTIVE        |    1782270225938 |             1 |                            0
+  es-cc-link | restapi-topic                                 | restapi-topic                                 | ACTIVE        |    1782270122191 |             1 |                            0
+  es-cc-link | some_topic                                    | some_topic                                    | ACTIVE        |    1782270101693 |             1 |                            0
+  es-cc-link | starter_topic                                 | starter_topic                                 | ACTIVE        |    1782270128646 |             1 |                            0
 ```
 
 ## KCP Prerequisites
