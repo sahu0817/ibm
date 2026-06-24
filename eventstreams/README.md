@@ -1,9 +1,9 @@
 # IBM EventStreams — Deployment and migration to Confluent Platform.
 
 A guide to  
-1. Deploy a demo IBM EventStreams instance on a **kind K8s** cluster running on an **AWS EC2** instance. It follows the official installation guide: ** [Installing Event Streams on Kubernetes](https://ibm.github.io/event-automation/es/installing/installing-on-kubernetes/)
+1. Deploy a demo IBM EventStreams instance on a **kind K8s** cluster running on an **AWS EC2** instance. It follows the official installation guide: [Installing Event Streams on Kubernetes](https://ibm.github.io/event-automation/es/installing/installing-on-kubernetes/)
 2. Use kcp tool to discover topics, schema registry etc 
-3. Use a opensource tool to migrate schemas to confluent schema registry  
+3. Use a opensource tool to migrate schemas from eventstreams to confluent schema registry  
 4. Setup ClusterLink to migrate topics,offsets,ACLs from EventStreams to Confluent Cloud
 
 ---
@@ -35,6 +35,7 @@ A guide to
 - [2. Scan schemaregistry (apicurio)](#2-scan-schemaregistry-apicurio)
 
 ### Schema Migration
+- [Prerequisites](#tool-prerequisites)
 - [1. Trust eventstreams apicurio endpiont cert](#1-trust-eventstreams-apicurio-endpoint-cert)
 - [2. Tool](#2-tool)
 - [3. DryRun](#3-dryrun)
@@ -817,6 +818,12 @@ TBD
 
 ## Schema Migration
 
+### Tool Prerequisites
+
+| Requirement | Notes |
+|---|---|
+| **go** | Download the latest from [here](https://go.dev/dl/)
+
 ### 1. Trust eventstreams apicurio endpoint cert 
 This step is needed for any client that needs to interact with secured apicurio endpoint
 
@@ -877,7 +884,7 @@ APICURIO (GROUP/ARTIFACT)  →  CONFLUENT SUBJECT     TYPE  STATUS
 default/book-value         →  book-value            AVRO  NEW
 default/restapi-schema     →  restapi-schema-value  AVRO  NEW
 ```
-### 4. Migrate
+### 4. Migrate Schemas
 
 ```bash
 ./schema-migrate migrate --config ./configs/config.yaml
