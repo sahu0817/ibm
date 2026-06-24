@@ -31,10 +31,10 @@ This guide documents
 - [16. Produce with Schema using REST API](#16-produce-with-schema-using-rest-api)
 
 ### Schema Migration
-- [1. Trust the eventstreams apicurio endpiont cert](1-trust-eventstreams-apicurio-endpoint-cert)
-- [2. Tool](2-tool)
-- [3. DryRun](3-dryrun)
-- [4. Migrate](4-migrate)
+- [1. Trust the eventstreams apicurio endpiont cert](#1-trust-eventstreams-apicurio-endpoint-cert)
+- [2. Tool](#2-tool)
+- [3. DryRun](#3-dryrun)
+- [4. Migrate](#4-migrate)
 
 ### Cluster Link
 - [1. Create a Kafka User](#1-create-a-kafka-user)
