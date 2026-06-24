@@ -5,8 +5,10 @@ This guide documents
 
 **Reference:** [Installing Event Streams on Kubernetes](https://ibm.github.io/event-automation/es/installing/installing-on-kubernetes/)
 
-2. Setup ClusterLink to migrate topics from EventStreams to Confluent Cloud
-3. Use kcp tool to migrate to Confluent Platform
+2. Use kcp tool to discover topics, schema registry etc 
+3. Use a opensource tool to migrate schemas to confluent schema registry  
+4. Setup ClusterLink to migrate topics,offsets,ACLs from EventStreams to Confluent Cloud
+
 ---
 
 ## Table of Contents
@@ -30,8 +32,13 @@ This guide documents
 - [15. Run the Starter Application](#15-run-the-starter-application)
 - [16. Produce with Schema using REST API](#16-produce-with-schema-using-rest-api)
 
+### kcp 
+- [Prerequisites](#kcp-prerequisites)
+- [1. Scan eventstreams cluster](#1-scan-eventstreams-cluster)
+- [2. Scan schemaregistry (apicurio)](#2-scan-schemaregistry-apicurio)
+
 ### Schema Migration
-- [1. Trust the eventstreams apicurio endpiont cert](#1-trust-eventstreams-apicurio-endpoint-cert)
+- [1. Trust eventstreams apicurio endpiont cert](#1-trust-eventstreams-apicurio-endpoint-cert)
 - [2. Tool](#2-tool)
 - [3. DryRun](#3-dryrun)
 - [4. Migrate](#4-migrate)
@@ -41,10 +48,6 @@ This guide documents
 - [2. Create a Cluster Link in Confuent Cloud](#1-create-a-cluster-link-in-confluent-cloud)
 - [3. Add topics to mirror](#1-add-topics-to-mirror)
 
-### kcp 
-- [Prerequisites](#kcp-prerequisites)
-- [1. Scan eventstreams cluster](#1-scan-eventstreams-cluster)
-- [2. Scan schemaregistry (apicurio)](#2-scan-schemaregistry-apicurio)
 ---
 
 ## Prerequisites
