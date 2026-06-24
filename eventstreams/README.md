@@ -30,12 +30,16 @@ This guide documents
 - [15. Run the Starter Application](#15-run-the-starter-application)
 - [16. Produce with Schema using REST API](#16-produce-with-schema-using-rest-api)
 
+### Schema Migration
+- [1. Trust the eventstreams apicurio endpiont cert](1-trust-eventstreams-apicurio-endpoint-cert)
+- [2. Tool](2-tool)
+- [3. DryRun](3-dryrun)
+- [4. Migrate](4-migrate)
+
 ### Cluster Link
 - [1. Create a Kafka User](#1-create-a-kafka-user)
 - [2. Create a Cluster Link in Confuent Cloud](#1-create-a-cluster-link-in-confluent-cloud)
 - [3. Add topics to mirror](#1-add-topics-to-mirror)
-
-### Schema Migration
 
 ### kcp 
 - [Prerequisites](#kcp-prerequisites)
@@ -778,6 +782,81 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
 ```
 ---
 # Migrate to Confluent with kcp
+## Schema Migration
+
+### 1. Trust the eventstreams apicurio endpiont cert 
+This step is needed for any client that needs to interact with secured apicurio endpoint
+
+Extract the cert chain from the endpoint
+```bash
+openssl s_client \
+   -connect apicurio.<ip-with-dashes>.sslip.io:443 \
+   -servername apicurio.<ip-with-dashes>.sslip.io \
+   -showcerts </dev/null 2>/dev/null > apicurio-sclient.txt
+```
+Extract the PEM block
+```bash
+awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' apicurio-sclient.txt > apicurio-chain.pem
+```
+Verify
+```bash
+openssl crl2pkcs7 -nocrl -certfile apicurio-chain.pem | openssl pkcs7 -print_certs -text -noout
+```
+Extract the root,intermediate,server. Usually cert1.pem is the leaf; later certs are intermediates/root.
+```bash
+awk 'BEGIN{c=0} /BEGIN CERTIFICATE/{c++} {print > ("cert" c ".pem")}' apicurio-chain.pem
+```
+Add the cert to the truststore 
+```bash
+sudo cp cert1.pem /usr/local/share/ca-certificates/apicurio.crt
+
+sudo update-ca-certificates
+
+Updating certificates in /etc/ssl/certs...
+rehash: warning: skipping ca-certificates.crt,it does not contain exactly one certificate or CRL
+1 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+Adding debian:apicurio.pem
+done.
+```
+Verify with a client
+```bash
+curl -v https://apicurio.<ip-with-dashes>.sslip.io/config
+```
+### 2. Tool
+
+Open Source tool to migrate schemas from apicurio to confluent.
+
+```bash
+ git clone https://github.com/akrishnanDG/apicurio-to-confluent-sr.git
+ cd apicurio-to-confluent-sr
+ go build -o schema-migrate
+```
+### 3. DryRun
+Create the config file (config.yaml) for the tool to access source (eventstreams) & destination (confluent) schema registries
+```bash
+/schema-migrate migrate --config ./configs/config.yaml --dry-run
+
+2026/06/24 18:30:33 Fetching schemas from Apicurio...
+2026/06/24 18:30:37 Found 2 schemas
+APICURIO (GROUP/ARTIFACT)  →  CONFLUENT SUBJECT     TYPE  STATUS
+────────────────────────   ─  ─────────────────     ────  ──────
+default/book-value         →  book-value            AVRO  NEW
+default/restapi-schema     →  restapi-schema-value  AVRO  NEW
+```
+### 4. Migrate
+
+```bash
+./schema-migrate migrate --config ./configs/config.yaml
+
+2026/06/24 18:31:50 Fetching schemas from Apicurio...
+2026/06/24 18:31:53 Found 2 schemas
+2026/06/24 18:31:53 OK   default/book-value → book-value (id=100191, version=1)
+2026/06/24 18:31:53 OK   default/restapi-schema → restapi-schema-value (id=100192, version=1)
+
+Migration complete: 2 migrated, 0 skipped, 0 failed
+```
+
 
 ## Cluster Link 
 
@@ -877,79 +956,6 @@ confluent kafka  mirror list --link es-cc-link
   es-cc-link | starter_topic                                 | starter_topic                                 | ACTIVE        |    1782270128646 |             1 |                            0
 ```
 
-## Schema Migration
-
-### Load the eventstreams apicurio endpiont certs in the truststure 
-
-Extract the cert chain from the endpoint
-```bash
-openssl s_client \
-   -connect apicurio.<ip-with-dashes>.sslip.io:443 \
-   -servername apicurio.<ip-with-dashes>.sslip.io \
-   -showcerts </dev/null 2>/dev/null > apicurio-sclient.txt
-```
-Extract the PEM block
-```bash
-awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' apicurio-sclient.txt > apicurio-chain.pem
-```
-Verify
-```bash
-openssl crl2pkcs7 -nocrl -certfile apicurio-chain.pem | openssl pkcs7 -print_certs -text -noout
-```
-Extract the root,intermediate,server. Usually cert1.pem is the leaf; later certs are intermediates/root.
-```bash
-awk 'BEGIN{c=0} /BEGIN CERTIFICATE/{c++} {print > ("cert" c ".pem")}' apicurio-chain.pem
-```
-Trust the CA cert
-```bash
-sudo cp cert1.pem /usr/local/share/ca-certificates/apicurio.crt
-
-sudo update-ca-certificates
-Updating certificates in /etc/ssl/certs...
-rehash: warning: skipping ca-certificates.crt,it does not contain exactly one certificate or CRL
-1 added, 0 removed; done.
-Running hooks in /etc/ca-certificates/update.d...
-
-Adding debian:apicurio.pem
-done.
-```
-Verify
-```bash
-curl -v https://apicurio.<ip-with-dashes>.sslip.io/config
-```
-### Tool
-
-Open Source tool to migrate schemas from apicurio to confluent.
-
-```bash
- git clone https://github.com/akrishnanDG/apicurio-to-confluent-sr.git
- cd apicurio-to-confluent-sr
- go build -o schema-migrate
-```
-### DryRun
-Create the config file (config.yaml) for the tool to access source (eventstreams) & destination (confluent) schema registries
-```bash
-/schema-migrate migrate --config ./configs/config.yaml --dry-run
-
-2026/06/24 18:30:33 Fetching schemas from Apicurio...
-2026/06/24 18:30:37 Found 2 schemas
-APICURIO (GROUP/ARTIFACT)  →  CONFLUENT SUBJECT     TYPE  STATUS
-────────────────────────   ─  ─────────────────     ────  ──────
-default/book-value         →  book-value            AVRO  NEW
-default/restapi-schema     →  restapi-schema-value  AVRO  NEW
-```
-### Migrate
-
-```bash
-./schema-migrate migrate --config ./configs/config.yaml
-
-2026/06/24 18:31:50 Fetching schemas from Apicurio...
-2026/06/24 18:31:53 Found 2 schemas
-2026/06/24 18:31:53 OK   default/book-value → book-value (id=100191, version=1)
-2026/06/24 18:31:53 OK   default/restapi-schema → restapi-schema-value (id=100192, version=1)
-
-Migration complete: 2 migrated, 0 skipped, 0 failed
-```
 
 
 ## KCP Prerequisites
