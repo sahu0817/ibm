@@ -1,0 +1,32 @@
+apicurio:
+  url: https://apicurio.<ip-with-dashes>.sslip.io
+  api_version: v3          # v2 or v3
+  username: "admin"
+  password: "<ADMIN_PASSWORD>"
+
+confluent:
+  url: https://psrc-1ymy5nj.us-east-1.aws.confluent.cloud
+  auth_type: api-key       # api-key or basic
+  api_key: "<cc-sr-key>"
+  api_secret: "<cc-sr-secret>"
+  username: ""
+  password: ""
+
+mapping:
+  strategy: topic-name      # topic-name, record-name, topic-record-name, or custom
+  subject_format: ""        # Go template, only used when strategy=custom
+  rules:
+    - match: ".*Key$"
+      type: key
+    - match: ".*"
+      type: value
+  topic_map:                # optional: artifact -> topic mapping
+    # payments/OrderCreated: orders
+    # payments/OrderKey: orders
+
+migration:
+  all_versions: false
+  dry_run: false
+  copy_compatibility: true
+  fail_fast: false
+  rate_limit: 0             # requests/sec, 0 = unlimited
