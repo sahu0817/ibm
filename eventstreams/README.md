@@ -1,11 +1,12 @@
-# IBM EventStreams — Demo Deployment on Kubernetes (kind on EC2)
+# IBM EventStreams — Deployment and migration to Confluent Platform.
 
 This guide documents 
-1. Deploy a demo IBM Event Streams instance on a **kind** cluster running on an AWS EC2 instance. It follows the official installation guide:
+1. Deploy a demo IBM EventStreams instance on a **kind K8s** cluster running on an **AWS EC2** instance. It follows the official installation guide:
 
 **Reference:** [Installing Event Streams on Kubernetes](https://ibm.github.io/event-automation/es/installing/installing-on-kubernetes/)
 
-2. Use kcp tool to migrate to Confluent Platform
+2. Setup ClusterLink to migrate topics from EventStreams to Confluent Cloud
+3. Use kcp tool to migrate to Confluent Platform
 ---
 
 ## Table of Contents
@@ -839,6 +840,17 @@ confluent kafka link describe es-cc-link
 ```
 
 ## 3. Add topics to mirror 
+
+Topics on Source Cluster (EventStreams)
+```bash
+ kubectl es topics
+Name            Partition Count   Replication Factor   Status   Message
+restapi-topic   1                 1                    Ready    Topic is Ready
+some_topic      1                 1                    Ready    Topic is Ready
+starter_topic   1                 1                    Ready    Topic is Ready
+```
+
+Mirror the source topics on the Destination Cluster ( Confluent Cloud )
 ```bash
 confluent kafka  mirror  create some_topic --link es-cc-link
 Created mirror topic "some_topic".
@@ -848,7 +860,6 @@ Created mirror topic "starter_topic".
 
 confluent kafka  mirror  create restapi-topic --link es-cc-link
 Created mirror topic "restapi-topic".
-
 ```
 
 List mirror topics
