@@ -781,7 +781,40 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
   "timestamp" : 1781841235780
 ```
 ---
-# Migrate to Confluent with kcp
+# Migrate to Confluent  
+
+## Discover with kcp tool
+
+### KCP Prerequisites
+
+| Requirement | Notes |
+|---|---|
+| **kcp** | Download the latest from [here](https://github.com/confluentinc/kcp/releases)
+
+```bash
+wget https://github.com/confluentinc/kcp/releases/download/v0.8.5/kcp_linux_amd64.tar.gz
+tar -xzf kcp_linux_amd64.tar.gz
+sudo cp kcp/kcp /usr/local/bin
+```
+---
+
+### 1. Scan eventstreams cluster 
+```bash
+kcp scan clusters --source-type apache-kafka --credentials-file apache-kafka-credentials.yaml
+
+ℹ️  Apache Kafka credentials file format & metrics options: https://confluentinc.github.io/kcp/0.8.5/apache-kafka-configuration/
+2026/06/22 16:19:28 WARN TLS certificate verification is disabled - this should only be used in test environments with self-signed certificates
+
+✅ Scan completed successfully
+   Scanned 1 cluster(s)
+   State file: kcp-state.json
+```
+---
+### 2. Scan schemaregistry (apicurio)
+
+TBD
+---
+
 ## Schema Migration
 
 ### 1. Trust eventstreams apicurio endpoint cert 
@@ -860,7 +893,7 @@ Migration complete: 2 migrated, 0 skipped, 0 failed
 
 ## Cluster Link 
 
-## 1. Create a Kafka User 
+### 1. Create a Kafka User 
 
 Make sure the following ACLs are configured for this user for mirroring, offset-sync, ACL sync
 - Topics  : Read, Describe, DescribeConfigs
@@ -878,7 +911,7 @@ kubectl get secret cluser -n my-eventstreams -o jsonpath='{.data.password}' | ba
 
 abcdefghijklm123
 ```
-## 2. Create a Cluster Link in Confuent Cloud 
+### 2. Create a Cluster Link in Confuent Cloud 
 
 Prepare the clusterlink config file cluser.config
 
@@ -920,7 +953,7 @@ confluent kafka link describe es-cc-link
 +-------------------------------+--------------------------------+
 ```
 
-## 3. Add topics to mirror 
+### 3. Add topics to mirror 
 
 Topics on Source Cluster (EventStreams)
 ```bash
