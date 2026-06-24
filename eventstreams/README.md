@@ -29,6 +29,11 @@ This guide documents
 - [15. Run the Starter Application](#15-run-the-starter-application)
 - [16. Produce with Schema using REST API](#16-produce-with-schema-using-rest-api)
 
+### Cluster Link
+- [1. Create a Kafka User](#1-create-a-kafka-user)
+- [2. Create a Cluster Link in Confuent Cloud](#1-create-a-cluster-link-in-confluent-cloud)
+- [3. Add topics to mirror](#1-add-topics-to-mirror)
+
 ### kcp 
 - [Prerequisites](#kcp-prerequisites)
 - [1. Scan eventstreams cluster](#1-scan-eventstreams-cluster)
@@ -770,6 +775,72 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
 ```
 ---
 # Migrate to Confluent with kcp
+
+## Cluster Link 
+
+## 1. Create a Kafka User 
+
+Make sure the following ACLs are configured for this user for mirroring, offset-sync, ACL sync
+Topics - Read, Describe, DescribeConfigs
+Groups - Read, Describe
+Cluster - Describe (If ACL sync is supported)
+
+```bash
+kubectl apply -f cluser.yaml -n my-eventstreams
+
+kafkauser.eventstreams.ibm.com/cluser created
+```
+Fetch the password for this user to be used in cluster link creation
+```bash
+kubectl get secret cluser -n my-eventstreams -o jsonpath='{.data.password}' | base64 -d; echo
+
+abcdefghijklm123
+```
+## 2. Create a Cluster Link in Confuent Cloud 
+
+Prepare the clusterlink config file cluser.config
+
+Extract the cert chain from the endpoint
+```bash
+openssl s_client    -connect kafka.18-220-31-188.sslip.io:443    -servername kafka.18-220-31-188.sslip.io    -showcerts </dev/null 2>/dev/null > kafka-sclient.txt
+```
+Extract the PEM block
+```bash
+awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' kafka-sclient.txt > kafka-chain.pem
+```
+Extract the cert chain
+```bash
+awk 'BEGIN{c=0} /BEGIN CERTIFICATE/{c++} {print > ("cert" c ".pem")}' kafka-chain.pem
+```
+> **Note:** This chain involves root (cert1.pem) and server (cert2.pem). You need to join these with new lines (\n) as the value for the key ssl.truststore.certificates 
+
+Create the clusterlink in Confluent CLoud
+```bash
+confluent kafka link create es-cc-link --source-cluster SFvtR-zyRXCARBLqLcu3Qg --source-bootstrap-server kafka.<ip-with-dashes>.sslip.io:443 --config cluser.config
+
+Created cluster link "es-cc-link" with configs:
+"bootstrap.servers"="kafka.<ip-with-dashes>.sslip.io:443"
+"link.mode"="DESTINATION"
+"sasl.mechanism"="SCRAM-SHA-512"
+"security.protocol"="SASL_SSL"
+```
+```bash
+confluent kafka link describe es-cc-link
++-------------------------------+--------------------------------+
+| Name                          | es-cc-link                     |
+| Source Cluster                | SFvtR-zyRXCARBLqLcu3Qg         |
+| Destination Cluster           |                                |
+| Remote Cluster                | SFvtR-zyRXCARBLqLcu3Qg         |
+| State                         | ACTIVE                         |
+| Mirror Partition States Count | ACTIVE: 6, PENDING: 0,         |
+|                               | IN_ERROR: 0, PAUSED: 0,        |
+|                               | UNKNOWN: 0                     |
++-------------------------------+--------------------------------+
+```
+
+## 3. Add topics to mirror 
+```bash
+```
 
 ## KCP Prerequisites
 

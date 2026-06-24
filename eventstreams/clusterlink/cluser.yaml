@@ -1,0 +1,43 @@
+apiVersion: eventstreams.ibm.com/v1beta2
+kind: KafkaUser
+metadata:
+  name: cluser
+  namespace: my-eventstreams
+  labels:
+    eventstreams.ibm.com/cluster: minimal-prod
+spec:
+  authentication:
+    type: scram-sha-512
+  authorization:
+    type: simple
+    acls:
+      - operation: Read
+        resource:
+          type: topic
+          name: '*'
+          patternType: literal
+      - operation: Describe
+        resource:
+          type: topic
+          name: '*'
+          patternType: literal
+      - operation: DescribeConfigs
+        resource:
+          type: topic
+          name: '*'
+          patternType: literal
+      - operation: Read
+        resource:
+          type: group
+          name: '*'
+          patternType: literal
+      - operation: Describe
+        resource:
+          type: group
+          name: '*'
+          patternType: literal
+      - operation: Describe
+        resource:
+          type: cluster
+          name: kafka-cluster
+          patternType: literal
