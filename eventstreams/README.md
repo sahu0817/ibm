@@ -27,7 +27,8 @@ A guide to
 - [13. Manage Kafka Topics](#13-manage-kafka-topics)
 - [14. Manage Kafka Schemas](#14-manage-kafka-schemas)
 - [15. Run the Starter Application](#15-run-the-starter-application)
-- [16. Produce with Schema using REST API](#16-produce-with-schema-using-rest-api)
+- [16. Produce without schem using console produer](#16-produce-without-schema-using-console-producer)
+- [17. Produce with Schema using REST API](#17-produce-with-schema-using-rest-api)
 
 ### kcp 
 - [Prerequisites](#kcp-prerequisites)
@@ -43,8 +44,8 @@ A guide to
 
 ### Cluster Link
 - [1. Create a Kafka User](#1-create-a-kafka-user)
-- [2. Create a Cluster Link in Confuent Cloud](#1-create-a-cluster-link-in-confluent-cloud)
-- [3. Add topics to mirror](#1-add-topics-to-mirror)
+- [2. Create a Cluster Link in Confuent Cloud](#2-create-a-cluster-link-in-confluent-cloud)
+- [3. Add topics to mirror](#3-add-topics-to-mirror)
 
 ---
 
@@ -726,7 +727,17 @@ http://<EC2_PUBLIC_IP>:8080/
 ![Starter application UI](images/starterapp_ui.png)
 
 ---
-## 16. Produce with Schema using REST API
+## 16. Produce without Schema using console producer
+```bash
+kafka-console-producer --bootstrap-server kafka.18-220-31-188.sslip.io:443 --producer.config es-client.config --topic some_topic
+
+>Test msg1
+>Test msg2
+>Test msg3
+^C
+```
+---
+## 17. Produce with Schema using REST API
 
 #### Create Scram Credentials
 On the eventstreams UI: Go to **Home → Connect to this Cluster → Producer endpoint and credentials → Generate Credentials → SCRAM username and password**
