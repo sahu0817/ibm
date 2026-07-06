@@ -810,7 +810,7 @@ sudo cp kcp/kcp /usr/local/bin
 ```
 ---
 
-### 1. Scan eventstreams cluster 
+### 1. Scan eventstreams kafka cluster 
 ```bash
 kcp scan clusters --source-type apache-kafka --credentials-file apache-kafka-credentials.yaml
 
@@ -822,7 +822,7 @@ kcp scan clusters --source-type apache-kafka --credentials-file apache-kafka-cre
    State file: kcp-state.json
 ```
 ---
-### 2. Scan schemaregistry (apicurio)
+### 2. Scan eventstreams schemaregistry (apicurio)
 
 ```bash
 kcp scan schema-registry --url https://apicurio.<ip-with-dashes>.sslip.io/apis/ccompat/v7 --sr-type confluent --use-basic-auth --username admin --password blabla --state-file ./kcp-state.json
