@@ -729,7 +729,7 @@ http://<EC2_PUBLIC_IP>:8080/
 ---
 ## 16. Produce without Schema using console producer
 ```bash
-kafka-console-producer --bootstrap-server kafka.18-220-31-188.sslip.io:443 --producer.config es-client.config --topic some_topic
+kafka-console-producer --bootstrap-server kafka.<ip-with-dashes>.sslip.io:443 --producer.config es-client.config --topic some_topic
 
 >Test msg1
 >Test msg2
@@ -824,7 +824,13 @@ kcp scan clusters --source-type apache-kafka --credentials-file apache-kafka-cre
 ---
 ### 2. Scan schemaregistry (apicurio)
 
-TBD
+```bash
+kcp scan schema-registry --url https://apicurio.<ip-with-dashes>.sslip.io/apis/ccompat/v7 --sr-type confluent --use-basic-auth --username admin --password blabla --state-file ./kcp-state.json
+
+Executing kcp with build version=0.8.8 commit=25229429ee782c57285700d77190d0edd1f2b360 date=2026-07-06T15:08:18Z
+🚀 Starting schema registry scanner
+✅ Successfully scanned schema registry
+```
 ---
 
 ## Schema Migration
