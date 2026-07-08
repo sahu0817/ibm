@@ -27,8 +27,9 @@ A guide to
 - [13. Manage Kafka Topics](#13-manage-kafka-topics)
 - [14. Manage Kafka Schemas](#14-manage-kafka-schemas)
 - [15. Run the Starter Application](#15-run-the-starter-application)
-- [16. Produce without schem using console produer](#16-produce-without-schema-using-console-producer)
+- [16. Produce without Schema using console produer](#16-produce-without-schema-using-console-producer)
 - [17. Produce with Schema using REST API](#17-produce-with-schema-using-rest-api)
+- [18. List Schemas ](#18-list-schemas)
 
 ### kcp 
 - [Prerequisites](#kcp-prerequisites)
@@ -793,6 +794,16 @@ curl -H "Authorization: Basic abcdefghijklmnopqrstuvwxyz==" -H "Accept: applicat
   "timestamp" : 1781841235780
 ```
 ---
+## 18. List Schemas
+```bash
+kubectl es schemas
+
+Schema           State     Latest version   Updated
+book-value       enabled   v1               2026-06-18T21:17:07Z
+restapi-schema   enabled   v1               2026-06-19T03:49:08Z
+OK
+```
+---
 # Migrate to Confluent  
 
 ## Discover with kcp tool
@@ -835,11 +846,6 @@ Executing kcp with build version=0.8.8 commit=25229429ee782c57285700d77190d0edd1
 
 ## Schema Migration
 
-### Tool Prerequisites
-
-| Requirement | Notes |
-|---|---|
-| **go** | Download the latest from [here](https://go.dev/dl/)
 
 ### 1. Trust eventstreams apicurio endpoint cert 
 This step is needed for any client that needs to interact with secured apicurio endpoint
@@ -880,7 +886,22 @@ Verify with a client
 ```bash
 curl -v https://apicurio.<ip-with-dashes>.sslip.io/config
 ```
-### 2. Tool
+### 2a. kcp Tool
+This create the Terraform artifacts 
+```bash
+kcp create-asset migrate-schemas --state-file kcp-state.json --cc-type commercial --cc-sr-rest-endpoint https://psrc-1ymy5nj.us-east-1.aws.confluent.cloud --url https://apicurio.<ip-with-dashes>.sslip.io/apis/ccompat/v7
+
+Executing kcp with build version=0.8.8 commit=25229429ee782c57285700d77190d0edd1f2b360 date=2026-07-06T15:08:18Z
+🚀 Generating migrate schemas assets
+✅ Migrate schemas assets generated: migrate_schemas
+```
+### 3a. 3rd party Tool
+
+### 3rd party Tool Prerequisites
+
+| Requirement | Notes |
+|---|---|
+| **go** | Download the latest from [here](https://go.dev/dl/)
 
 Open Source tool to migrate schemas from apicurio to confluent.
 
@@ -889,7 +910,7 @@ Open Source tool to migrate schemas from apicurio to confluent.
  cd apicurio-to-confluent-sr
  go build -o schema-migrate
 ```
-### 3. DryRun
+### 3b. DryRun
 Create the config file (config.yaml) for the tool to access source (eventstreams) & destination (confluent) schema registries
 ```bash
 /schema-migrate migrate --config ./configs/config.yaml --dry-run
@@ -901,7 +922,7 @@ APICURIO (GROUP/ARTIFACT)  →  CONFLUENT SUBJECT     TYPE  STATUS
 default/book-value         →  book-value            AVRO  NEW
 default/restapi-schema     →  restapi-schema-value  AVRO  NEW
 ```
-### 4. Migrate Schemas
+### 3c. Migrate Schemas
 
 ```bash
 ./schema-migrate migrate --config ./configs/config.yaml
