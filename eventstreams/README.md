@@ -1,4 +1,4 @@
-# IBM EventStreams — Deployment and migration to Confluent Platform.
+# IBM EventStreams — Deployment and migration to Confluent Cloud.
 
 A guide to  
 1. Deploy a demo IBM EventStreams instance on a **kind K8s** cluster running on an **AWS EC2** instance. It follows the official installation guide: [Installing Event Streams on Kubernetes](https://ibm.github.io/event-automation/es/installing/installing-on-kubernetes/)
